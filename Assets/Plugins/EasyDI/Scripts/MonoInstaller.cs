@@ -10,7 +10,7 @@ namespace EasyDI
 
         public Container Container { get => container; private set => container = value; }
 
-        protected void InstallBinding()
+        protected virtual void InstallBinding()
         {
             throw new System.Exception("Need implement!");
         }

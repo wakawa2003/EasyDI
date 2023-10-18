@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace EasyDI
 {
+    [DefaultExecutionOrder(-999999)]
     public class ProjectContext : ContextBase
     {
 
@@ -48,8 +49,13 @@ namespace EasyDI
                 return;
             }
             #endregion
+
         }
 
-
+        private void Start()
+        {
+            Debug.Log($"Start Project Context");
+            
+        }
     }
 }
