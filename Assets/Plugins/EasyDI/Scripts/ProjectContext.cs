@@ -37,8 +37,10 @@ namespace EasyDI
         }
         #endregion
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+       
             #region Singleton
             if (ins == null)
                 ins = this;

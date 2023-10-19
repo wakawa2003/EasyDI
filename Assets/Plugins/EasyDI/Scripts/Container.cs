@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace EasyDI
 {
+    /// <summary>
+    /// Only save binding!
+    /// </summary>
     public class Container
     {
         Dictionary<Type, BindInfor> dictTypeAndData = new Dictionary<Type, BindInfor>();
@@ -17,9 +20,23 @@ namespace EasyDI
             var bindType = new BindType<t>(bindInfor);
             var type = typeof(t);
 
-            dictTypeAndData.Add(type, bindInfor);
+            AddTypeAndInfor(type, bindInfor);
             return bindType;
         }
+
+        public void AddTypeAndInfor(Type type, BindInfor bindInfor)
+        {
+            if (DictTypeAndData.ContainsKey(type))
+            {
+                EasyDILog.LogError($"Exist more than one {type} binding in this container!");
+            }
+            else
+            {
+                DictTypeAndData.Add(type, bindInfor);
+            }
+        }
+
+
     }
 
     public class BindInfor

@@ -11,6 +11,7 @@ namespace Demo
         protected override void InstallBinding()
         {
             Container.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
+            
         }
     }
 }

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec36ce97a8cbeed41b1e1562ed6d5100, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstaller:
+  monoInstallerList:
   - {fileID: 5311850912144738004}
 --- !u!114 &5311850912144738004
 MonoBehaviour:
