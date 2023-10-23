@@ -65,7 +65,6 @@ namespace EasyDI
             UnSet, Singleton, Transient
         }
     }
-
     public class BindType<a>
     {
         BindInfor bindInfor;
@@ -100,5 +99,6 @@ namespace EasyDI
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.OnlyThisGameObject;
         }
     }
+
 
 }

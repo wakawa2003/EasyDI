@@ -1,3 +1,4 @@
+using EasyDI.Demo;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace EasyDI
         protected override void Awake()
         {
             base.Awake();
-       
+
             #region Singleton
             if (ins == null)
                 ins = this;
@@ -52,12 +53,30 @@ namespace EasyDI
             }
             #endregion
 
+
         }
 
         private void Start()
         {
             Debug.Log($"Start Project Context");
-            
+            InjectFor(new TestDI(), null, null);
+        }
+
+        class TestDI
+        {
+            [Inject] public IMoveable moveable;
+            [Inject] string filedString1;
+            [field: SerializeField][Inject] public float Properties1 { get; set; }
+
+            [Inject]
+            void Method1(Vector3 pos, IMoveable moveable)
+            {
+            }
+
+            void MethodNotInject()
+            {
+
+            }
         }
     }
 }

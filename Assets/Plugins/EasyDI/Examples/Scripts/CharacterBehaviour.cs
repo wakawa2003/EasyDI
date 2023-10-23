@@ -7,8 +7,12 @@ namespace EasyDI.Demo
 {
     public class CharacterBehaviour : MonoBehaviour, IMoveable
     {
-        [field: SerializeField] public float Speed { get; set; }
+        [SerializeField]
+        [Inject]
+        string filedString1;
+        [field: SerializeField][Inject] public float Speed { get; set; }
 
+        [Inject]
         public void Move(Vector3 pos)
         {
         }
