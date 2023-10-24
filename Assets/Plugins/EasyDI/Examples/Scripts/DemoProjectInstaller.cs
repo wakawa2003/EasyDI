@@ -12,8 +12,7 @@ namespace Demo
         {
             Debug.Log($"install binding");
             Container.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
-            Container.Bind<Vector3>().To<Vector3>().FromComponentInChild();
-
+            Container.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(4, 5, 6));
         }
     }
 }

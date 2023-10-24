@@ -98,7 +98,7 @@ namespace EasyDI
                         EasyDILog.LogError($"Can't find binding {filedType.FieldType} for Method: {filedType}!!");
                     }
                 }
-           
+
                 void _setForMethod(MemberInfo member)
                 {
                     var methodInfor = (member as MethodInfo);

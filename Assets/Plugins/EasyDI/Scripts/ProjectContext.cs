@@ -71,6 +71,7 @@ namespace EasyDI
             [Inject]
             void Method1(Vector3 pos, IMoveable moveable)
             {
+                Debug.Log($"pos was injected: {pos}");
             }
 
             void MethodNotInject()

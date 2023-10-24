@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace EasyDI
@@ -14,10 +15,10 @@ namespace EasyDI
 
         public Dictionary<Type, BindInfor> DictTypeAndData { get => dictTypeAndData; private set => dictTypeAndData = value; }
 
-        public BindType<t> Bind<t>()
+        public BindReturn<t> Bind<t>()
         {
             BindInfor bindInfor = new BindInfor();
-            var bindType = new BindType<t>(bindInfor);
+            var bindType = new BindReturn<t>(bindInfor);
             var type = typeof(t);
 
             AddTypeAndInfor(type, bindInfor);
@@ -47,14 +48,15 @@ namespace EasyDI
         public object ObjectData { get; set; }
         public EGetInstanceMethod GetInstanceMethod { get; set; }
         public EnumTreatWithInstanceMethod TreatWithInstanceMethod { get; set; }
-
+        public Func<object, MemberInfo, object> CustomGetInstancePredict { get; set; }
+        public Func<object, MemberInfo, bool> WherePredict { get; set; }
 
         /// <summary>
         /// Method how to get instance.
         /// </summary>
         public enum EGetInstanceMethod
         {
-            UnSet, OnlyThisGameObject, ItSelfAndComponentInChild
+            UnSet, OnlyThisGameObject, ItSelfAndComponentInChild, ItSelfAndComponentInParent
         }
 
         /// <summary>
@@ -65,40 +67,79 @@ namespace EasyDI
             UnSet, Singleton, Transient
         }
     }
-    public class BindType<a>
+    public class BindReturn<a>
     {
         BindInfor bindInfor;
+
         //constructor
-        public BindType(BindInfor bindInfor)
+        public BindReturn(BindInfor bindInfor)
         {
             this.bindInfor = bindInfor;
         }
 
-        public ToType<b> To<b>() where b : a
+        public ToReturn<b> To<b>() where b : a
         {
-            return new ToType<b>(bindInfor);
+            return new ToReturn<b>(bindInfor);
         }
     }
-    public class ToType<a>
+    public class ToReturn<a>
     {
         BindInfor bindInfor;
+        FromReturn<a> fromReturn;
 
         //constructor
-        public ToType(BindInfor bindInfor)
+        public ToReturn(BindInfor bindInfor)
         {
             this.bindInfor = bindInfor;
+            fromReturn = new FromReturn<a>(bindInfor);
         }
 
-        public void FromComponentInChild()
+        public FromReturn<a> FromComponentInChild()
         {
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.ItSelfAndComponentInChild;
+            return fromReturn;
         }
 
-        public void FromThisGameObject()
+        public FromReturn<a> FromThisGameObject()
         {
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.OnlyThisGameObject;
+            return fromReturn;
+        }
+
+
+        public FromReturn<a> FromThisAndParent()
+        {
+            bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.ItSelfAndComponentInParent;
+            return fromReturn;
+        }
+
+        public FromReturn<a> FromInstance(a value)
+        {
+            bindInfor.ObjectData = value;
+            return fromReturn;
+        }
+        
+        public void Where(Func<object, MemberInfo, bool> func)
+        {
+            bindInfor.WherePredict = func;
+        }
+        
+        public void CustomGetInstance(Func<object, MemberInfo, object> func)
+        {
+            bindInfor.CustomGetInstancePredict = func;
         }
     }
 
+    public class FromReturn<a>
+    {
+        BindInfor bindInfor;
+
+        //constructor
+        public FromReturn(BindInfor bindInfor)
+        {
+            this.bindInfor = bindInfor;
+        }
+
+    }
 
 }
