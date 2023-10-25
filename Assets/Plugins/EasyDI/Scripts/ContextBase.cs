@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace EasyDI
 {
-    public class ContextBase : MonoBehaviour
+    [DisallowMultipleComponent]
+    public abstract class ContextBase : MonoBehaviour
     {
         Container container = new Container();
         [SerializeField] List<MonoInstaller> monoInstallerList = new List<MonoInstaller>();
@@ -17,13 +19,17 @@ namespace EasyDI
         public Container Container { get => container; }
         ContextBase contextParent;
 
+        protected abstract ContextBase GetParentContext();
         protected virtual void Awake()
         {
             container = new Container();
+            contextParent = GetParentContext();
             GetAllBindInforFromInstallerList();
         }
+        protected virtual void OnDestroy()
+        {
 
-
+        }
         /// <summary>
         /// combine bind conditional.
         /// </summary>
@@ -40,19 +46,26 @@ namespace EasyDI
             }
         }
 
-        public void InjectFor(object obj, Type type, Dictionary<Type, BindInfor> inforFromChildContext)
+        public void InjectFor(object obj)
         {
+            InjectFor(obj, container.DictTypeAndData);
+        }
+
+        public void InjectFor(object obj, Dictionary<Type, BindInfor> inforFromChildContext)
+        {
+            Dictionary<Type, BindInfor> newInforFromChildContextAndThis = new Dictionary<Type, BindInfor> { };
+            _combineConditions(ref newInforFromChildContextAndThis, inforFromChildContext, container.DictTypeAndData);
 
             if (contextParent != null)
             {
                 //b1: tong hop infor condition tu child va chinh no
-                //b2: goi => contextParent.InjectFor(obj, type, inforThisAndChild);
-
+                //b2: goi => contextParent.InjectFor(obj, inforThisAndChild);
+                contextParent.InjectFor(obj, newInforFromChildContextAndThis);
             }
             else
             {
                 //inject cho obj ngoai tru nhung infor child
-                var l = getAllMemberNeedInject(obj);
+                var l = getAllMemberNeedInject(obj.GetType());
                 foreach (var memberInfor in l)
                 {
                     //Debug.Log($"type member: {item.DeclaringType.FullName}");
@@ -61,6 +74,12 @@ namespace EasyDI
                 }
             }
 
+            bool _tryGetConditionFromThisAndChild(Type type, out BindInfor bindInfor)
+            {
+                return newInforFromChildContextAndThis.TryGetValue(type, out bindInfor);
+
+
+            }
 
             void _setData(object obj, MemberInfo member)
             {
@@ -75,7 +94,7 @@ namespace EasyDI
                         _setForMethod(member);
                         break;
                     case MemberTypes.Property:
-                        var proType = ((PropertyInfo)member);
+                        _setForProperties(obj, member);
                         break;
                     default:
                         throw new ArgumentException
@@ -88,14 +107,14 @@ namespace EasyDI
                 {
                     var filedType = (member as FieldInfo);
                     BindInfor infor = null;
-                    if (container.DictTypeAndData.TryGetValue(filedType.FieldType, out infor))
+                    if (_tryGetConditionFromThisAndChild(filedType.FieldType, out infor))
                     {
                         Debug.Log($"Tim thay member can inject: {member}");
                         filedType.SetValue(obj, infor.ObjectData);
                     }
                     else
                     {
-                        EasyDILog.LogError($"Can't find binding {filedType.FieldType} for Method: {filedType}!!");
+                        EasyDILog.LogError($"Can't find binding {filedType.FieldType} for field: {filedType}!!");
                     }
                 }
 
@@ -108,7 +127,7 @@ namespace EasyDI
                     {
                         BindInfor infor = null;
                         var item = @params[i].ParameterType;
-                        if (container.DictTypeAndData.TryGetValue(item, out infor))
+                        if (_tryGetConditionFromThisAndChild(item, out infor))
                         {
                             Debug.Log($"Tim thay member can inject: {member}");
                             args[i] = infor.ObjectData;
@@ -120,13 +139,43 @@ namespace EasyDI
                     }
                     methodInfor.Invoke(obj, args);
                 }
+                void _setForProperties(object obj, MemberInfo member)
+                {
+                    var proType = ((PropertyInfo)member);
+                    BindInfor infor = null;
+                    if (_tryGetConditionFromThisAndChild(proType.PropertyType, out infor))
+                    {
+                        Debug.Log($"Tim thay member can inject: {member}");
+                        proType.SetValue(obj, infor.ObjectData);
+                    }
+                    else
+                    {
+                        EasyDILog.LogError($"Can't find binding {proType.PropertyType} for properties: {proType}!!");
+                    }
+                }
+
+            }
+
+            static void _combineConditions(ref Dictionary<Type, BindInfor> newInforFromChildContextAndThis, Dictionary<Type, BindInfor> dict1, Dictionary<Type, BindInfor> dict2)
+            {
+                //can phai tao dict moi
+
+                foreach (var a in dict1)
+                {
+                    if (!newInforFromChildContextAndThis.ContainsKey(a.Key))
+                        newInforFromChildContextAndThis.Add(a.Key, a.Value);
+                }
+                foreach (var a in dict2)
+                {
+                    if (!newInforFromChildContextAndThis.ContainsKey(a.Key))
+                        newInforFromChildContextAndThis.Add(a.Key, a.Value);
+                }
 
             }
         }
 
-        private MemberInfo[] getAllMemberNeedInject(object obj)
+        private MemberInfo[] getAllMemberNeedInject(Type type)
         {
-            var type = obj.GetType();
 
             var list = type.FindMembers(System.Reflection.MemberTypes.Field | System.Reflection.MemberTypes.Method | System.Reflection.MemberTypes.Property, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, filer, "ReferenceEquals");
             return list;

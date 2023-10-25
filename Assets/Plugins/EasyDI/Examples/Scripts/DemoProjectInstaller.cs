@@ -10,9 +10,11 @@ namespace Demo
     {
         protected override void InstallBinding()
         {
-            Debug.Log($"install binding");
+            Debug.Log($"project install binding");
             Container.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
             Container.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(4, 5, 6));
+            Container.Bind<string>().To<string>().FromInstance("project string");
+            Container.Bind<float>().To<float>().FromInstance(999999f);
         }
     }
 }

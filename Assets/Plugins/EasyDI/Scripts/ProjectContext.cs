@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace EasyDI
 {
-    [DefaultExecutionOrder(-999999)]
+    [DefaultExecutionOrder(ExecutionOrderEasyDI.OrderProjectContext)]
     public class ProjectContext : ContextBase
     {
 
@@ -41,7 +41,6 @@ namespace EasyDI
         protected override void Awake()
         {
             base.Awake();
-
             #region Singleton
             if (ins == null)
                 ins = this;
@@ -52,14 +51,51 @@ namespace EasyDI
                 return;
             }
             #endregion
+            DontDestroyOnLoad(this); 
 
+        }
 
+        Dictionary<string, ContextBase> dictSceneContext = new Dictionary<string, ContextBase>();
+        public ContextBase GetSceneContext(string nameScene)
+        {
+            if (dictSceneContext.ContainsKey(nameScene))
+                return dictSceneContext[nameScene];
+            EasyDILog.LogError($"Can't found Scene Context in Scene: {nameScene}!");
+            return null;
+        }
+
+        public void AddSceneContext(string nameScene, ContextBase contextBase)
+        {
+            if (!dictSceneContext.ContainsKey(nameScene))
+                dictSceneContext.Add(nameScene, contextBase);
+            else
+            {
+                EasyDILog.LogError($"Exist more than 1 instance Scene Context in Scene: {nameScene}!");
+
+            }
+        }
+        public void RemoveSceneContext(string nameScene)
+        {
+            if (dictSceneContext.ContainsKey(nameScene))
+                dictSceneContext.Remove(nameScene);
+            else
+            {
+                EasyDILog.LogError($"Can't found Scene Context in Scene: {nameScene}!");
+
+            }
+        }
+
+        protected override ContextBase GetParentContext()
+        {
+            return null;
         }
 
         private void Start()
         {
             Debug.Log($"Start Project Context");
-            InjectFor(new TestDI(), null, null);
+            var di = new TestDI();
+            InjectFor(di);
+            Debug.Log($"sau khi inject: {JsonUtility.ToJson(di).ToString()}");
         }
 
         class TestDI
