@@ -11,13 +11,20 @@ namespace EasyDI
 ]
     public class InjectAttribute : System.Attribute
     {
-        public string tag;
+        string tag;
+        public string Tag => tag;
+
         public InjectAttribute()
         {
         }
         public InjectAttribute(string tag)
         {
             this.tag = tag;
+        }
+
+        public override string ToString()
+        {
+            return $"attribute tag: {tag}";
         }
     }
 }

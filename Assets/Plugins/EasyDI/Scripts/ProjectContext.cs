@@ -2,6 +2,7 @@ using EasyDI.Demo;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace EasyDI
@@ -51,7 +52,7 @@ namespace EasyDI
                 return;
             }
             #endregion
-            DontDestroyOnLoad(this); 
+            DontDestroyOnLoad(this);
 
         }
 
@@ -92,10 +93,27 @@ namespace EasyDI
 
         private void Start()
         {
+            TestLog();
+        }
+
+        private void TestLog()
+        {
             Debug.Log($"Start Project Context");
             var di = new TestDI();
             InjectFor(di);
             Debug.Log($"sau khi inject: {JsonUtility.ToJson(di).ToString()}");
+
+            //List<MemberInfo> memberInfoOut = new List<MemberInfo>();
+            //List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
+            //getAllMemberNeedInject(typeof(TestDI), memberInfoOut, injectAttributeOut);
+            //for (int i = 0; i < memberInfoOut.Count; i++)
+            //{
+            //    var memberInfor = memberInfoOut[i];
+            //    var injectAttribute = injectAttributeOut[i];
+            //    Debug.Log($"type member: {memberInfor}");
+            //    Debug.Log($"member has Inject:{injectAttribute.Tag}");
+
+            //}
         }
 
         class TestDI

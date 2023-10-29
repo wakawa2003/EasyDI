@@ -10,7 +10,7 @@ namespace EasyDI.Demo
         {
             Debug.Log("Scene install");
             //Container.Bind<string>().To<string>().FromInstance("Scene Demo string");
-            Container.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(1, 1, 3));
+            ContainerBinding.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(1, 1, 3));
         }
     }
 }

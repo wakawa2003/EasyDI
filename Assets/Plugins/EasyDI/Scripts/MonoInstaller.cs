@@ -6,9 +6,9 @@ namespace EasyDI
 {
     public abstract class MonoInstaller : MonoBehaviour
     {
-        Container container = new Container();
+        ContainerBinding containerBinding = new ContainerBinding();
 
-        public Container Container { get => container; private set => container = value; }
+        public ContainerBinding ContainerBinding { get => containerBinding; private set => containerBinding = value; }
 
         bool isInit = false;
         public void Init()

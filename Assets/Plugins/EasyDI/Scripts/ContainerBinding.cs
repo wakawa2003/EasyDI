@@ -1,44 +1,43 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace EasyDI
 {
     /// <summary>
     /// Only save binding!
     /// </summary>
-    public class Container
+    public class ContainerBinding
     {
-        Dictionary<Type, BindInfor> dictTypeAndData = new Dictionary<Type, BindInfor>();
 
-        public Dictionary<Type, BindInfor> DictTypeAndData { get => dictTypeAndData; private set => dictTypeAndData = value; }
+        public Dictionary<string, BindInfor> Dict_InjectName_And_BindInfor { get; private set; } = new Dictionary<string, BindInfor>();
 
-        public BindReturn<t> Bind<t>()
+        public BindReturn<t> Bind<t>(string tag = "")
         {
             BindInfor bindInfor = new BindInfor();
             var bindType = new BindReturn<t>(bindInfor);
-            var type = typeof(t);
-
-            AddTypeAndInfor(type, bindInfor);
+            var key = EasyDIUltilities.BuildKeyInject(typeof(t), tag);
+            AddBinding(key, bindInfor);
             return bindType;
         }
 
-        public void AddTypeAndInfor(Type type, BindInfor bindInfor)
+        public void AddBinding(string injectKey, BindInfor bindInfor)
         {
-            if (DictTypeAndData.ContainsKey(type))
+            if (Dict_InjectName_And_BindInfor.ContainsKey(injectKey))
             {
-                EasyDILog.LogError($"Exist more than one {type} binding in this container!");
+                EasyDILog.LogError($"Exist more than one {injectKey} binding in this container!");
             }
             else
             {
-                DictTypeAndData.Add(type, bindInfor);
+                Dict_InjectName_And_BindInfor.Add(injectKey, bindInfor);
             }
         }
 
-
     }
+
 
     public class BindInfor
     {
@@ -118,12 +117,12 @@ namespace EasyDI
             bindInfor.ObjectData = value;
             return fromReturn;
         }
-        
+
         public void Where(Func<object, MemberInfo, bool> func)
         {
             bindInfor.WherePredict = func;
         }
-        
+
         public void CustomGetInstance(Func<object, MemberInfo, object> func)
         {
             bindInfor.CustomGetInstancePredict = func;

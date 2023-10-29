@@ -8,7 +8,7 @@ namespace EasyDI.Demo
     public class CharacterBehaviour : MonoBehaviour, IMoveable
     {
         [SerializeField][Inject] string filedString1;
-        [SerializeField][Inject] string filedString2;
+        [SerializeField][Inject("tag1")] string filedString2;
         [field: SerializeField][Inject] public float Speed { get; set; }
 
         [Inject]
@@ -18,7 +18,7 @@ namespace EasyDI.Demo
 
         private void Start()
         {
-            Debug.Log($"Start character");
+            //Debug.Log($"Start character");
         }
     }
 }

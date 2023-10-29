@@ -308,6 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installString: SUb 2
+  installStringForTag1: character string tag1 1.0
 --- !u!114 &379728870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +338,81 @@ MonoBehaviour:
   filedString1: 
   filedString2: 
   <Speed>k__BackingField: 0
+--- !u!1 &380505397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 380505398}
+  - component: {fileID: 380505399}
+  - component: {fileID: 380505401}
+  - component: {fileID: 380505400}
+  m_Layer: 0
+  m_Name: Weapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &380505398
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380505397}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1390371141}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &380505399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380505397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63dcee559f7b3f4ba7c3ea1cb5934ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filedString1: 
+  filedString2: 
+  <Speed>k__BackingField: 0
+--- !u!114 &380505400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380505397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e9fcd79a473cd44ab3dc9353e755e4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &380505401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380505397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monoInstallerList:
+  - {fileID: 380505400}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,6 +674,7 @@ Transform:
   - {fileID: 2140753279}
   - {fileID: 2062897474}
   - {fileID: 379728868}
+  - {fileID: 380505398}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1390371142
@@ -628,6 +705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installString: character install value
+  installStringForTag1: character string tag1
 --- !u!114 &1390371144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,6 +767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installString: SUb 2.1
+  installStringForTag1: character string tag1 1.1
 --- !u!114 &1617605899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -765,6 +844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installString: SUb 1
+  installStringForTag1: character string tag1
 --- !u!114 &2062897476
 MonoBehaviour:
   m_ObjectHideFlags: 0

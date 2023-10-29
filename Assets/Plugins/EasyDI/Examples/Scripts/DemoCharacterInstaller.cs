@@ -7,13 +7,15 @@ namespace EasyDI.Demo
     public class DemoCharacterInstaller : MonoInstaller
     {
         public string installString = "character install value";
+        public string installStringForTag1 = "character string tag1";
         protected override void InstallBinding()
         {
-            Debug.Log($"character install binding");
-            Container.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
-            Container.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(8,8,8));
-            Container.Bind<string>().To<string>().FromInstance(installString);
-            Container.Bind<float>().To<float>().FromInstance(7777);
+            //Debug.Log($"character install binding");
+            ContainerBinding.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
+            ContainerBinding.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(8, 8, 8));
+            ContainerBinding.Bind<string>().To<string>().FromInstance(installString);
+            //ContainerBinding.Bind<string>("tag1").To<string>().FromInstance(installStringForTag1);
+            ContainerBinding.Bind<float>().To<float>().FromInstance(7777);
         }
     }
 }
