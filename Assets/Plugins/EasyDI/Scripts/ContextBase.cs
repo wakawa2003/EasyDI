@@ -76,8 +76,8 @@ namespace EasyDI
 
             if (contextParent != null)
             {
-                //b1: tong hop infor condition tu child va chinh no
-                //b2: goi => contextParent.InjectFor(obj, inforThisAndChild);
+                //b1: tong hop infor condition from child and it self
+                //b2: call => contextParent.InjectFor(obj, inforThisAndChild);
                 contextParent.InjectFor(obj, newInforFromChildContextAndThis);
             }
             else
@@ -198,7 +198,7 @@ namespace EasyDI
         protected void getAllMemberNeedInject(Type type, List<MemberInfo> memberInfoOut, List<InjectAttribute> injectAttributeOut)
         {
 
-            var list = type.FindMembers(System.Reflection.MemberTypes.Field | System.Reflection.MemberTypes.Method | System.Reflection.MemberTypes.Property, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, filer, "ReferenceEquals");
+            var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
 
             bool filer(MemberInfo m, object filterCriteria)
             {
