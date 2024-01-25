@@ -8,14 +8,39 @@ namespace EasyDI
     [DefaultExecutionOrder(ExecutionOrderEasyDI.OrderGameObjectContext)]
     public class GameObjectContext : ContextBase
     {
-        protected override void Awake()
-        {
-            base.Awake();
+        public bool IsAutoSearchInstallerInThisGameObject = true;
+        [SerializeField] public List<MonoInstaller> MonoInstaller = new List<MonoInstaller>();
 
-            foreach (Component t in GetComponents<Component>())
+        protected override void Init()
+        {
+            if (!isInit)
             {
-                InjectFor(t);
+
+                //Debug.Log($"game object context awake!!");
+                if (IsAutoSearchInstallerInThisGameObject)
+                    if (MonoInstaller.FindAll(_ => _ != null).Count() == 0)
+                        foreach (var installer in GetComponents<MonoInstaller>())
+                        {
+                            if (!MonoInstaller.Contains(installer))
+                            {
+                                MonoInstaller.Add(installer);
+                            }
+                        }
+
+                InstallerList.AddRange(MonoInstaller);
+                //Debug.Log($"{gameObject.name} INSTALLER LIST COUNT: {InstallerList.Count()}");
+                base.Init();
+
+                foreach (Component t in GetComponents<Component>())
+                {
+                    InjectFor(t);
+                }
             }
+        }
+
+        protected virtual void Awake()
+        {
+            Init();
         }
 
         protected override ContextBase GetParentContext()

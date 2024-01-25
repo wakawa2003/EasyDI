@@ -4,23 +4,14 @@ using UnityEngine;
 
 namespace EasyDI
 {
-    public abstract class MonoInstaller : MonoBehaviour
+    public abstract class MonoInstaller : MonoBehaviour, IInstallerBase
     {
-        ContainerBinding containerBinding = new ContainerBinding();
+        public ContainerBinding ContainerBinding { get; set; } = new ContainerBinding();
+        public bool isInit { get; set; } = false;
 
-        public ContainerBinding ContainerBinding { get => containerBinding; private set => containerBinding = value; }
+        public string InstallerName => gameObject.name;
 
-        bool isInit = false;
-        public void Init()
-        {
-            if (!isInit)
-                InstallBinding();
-            isInit = true;
-        }
+        public abstract void InstallBinding();
 
-        protected virtual void InstallBinding()
-        {
-            throw new System.Exception("Need implement!");
-        }
     }
 }

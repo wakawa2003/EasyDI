@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -260,6 +260,82 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!1 &373196692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 373196693}
+  - component: {fileID: 373196696}
+  - component: {fileID: 373196695}
+  - component: {fileID: 373196694}
+  m_Layer: 0
+  m_Name: Character 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &373196693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373196692}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.17915916, y: -0.31151983, z: -0.10438335}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &373196694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373196692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller:
+  - {fileID: 373196695}
+--- !u!114 &373196695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373196692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4b760ef78410e4d8cbabc5fbcc2dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  installString: character install value 2
+--- !u!114 &373196696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373196692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1a4e5dd87e778458936b77cde17212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stringInjected: 
+  transformInjected: {fileID: 0}
 --- !u!1 &379728867
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,8 +397,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 379728869}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!114 &379728871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,8 +487,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 380505400}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,8 +652,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e387ce5954018544c96f2c64b6f0e9ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 661012527}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!114 &661012527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,7 +728,7 @@ GameObject:
   - component: {fileID: 1390371144}
   - component: {fileID: 1390371143}
   m_Layer: 0
-  m_Name: Character
+  m_Name: Character 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -704,8 +780,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae7c670f21ea204e991be0004184bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installString: character install value
-  installStringForTag1: character string tag1
+  installString: character install value 33333
+  installStringForTag1: character string tag1444
 --- !u!114 &1390371144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -718,7 +794,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller:
   - {fileID: 1390371143}
 --- !u!1 &1617605896
 GameObject:
@@ -780,8 +857,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 1617605898}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!114 &1617605900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -809,6 +886,7 @@ GameObject:
   - component: {fileID: 2062897477}
   - component: {fileID: 2062897476}
   - component: {fileID: 2062897475}
+  - component: {fileID: 2062897478}
   m_Layer: 0
   m_Name: Sub Install
   m_TagString: Untagged
@@ -857,8 +935,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 2062897475}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!114 &2062897477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -874,6 +952,19 @@ MonoBehaviour:
   filedString1: 
   filedString2: 
   <Speed>k__BackingField: 0
+--- !u!114 &2062897478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062897473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4b760ef78410e4d8cbabc5fbcc2dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  installString: character install value 2
 --- !u!1 &2140753278
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,3 +1081,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1390371141}
   - {fileID: 661012525}
+  - {fileID: 373196693}

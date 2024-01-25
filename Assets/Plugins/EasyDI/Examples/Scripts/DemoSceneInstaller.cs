@@ -6,9 +6,9 @@ namespace EasyDI.Demo
 {
     public class DemoSceneInstaller : MonoInstaller
     {
-        protected override void InstallBinding()
+        public override void InstallBinding()
         {
-            Debug.Log("Scene install");
+            Debug.Log($"{gameObject.scene.name} install binding");
             //Container.Bind<string>().To<string>().FromInstance("Scene Demo string");
             ContainerBinding.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(1, 1, 3));
         }

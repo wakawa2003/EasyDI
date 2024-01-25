@@ -8,9 +8,9 @@ namespace EasyDI.Demo
     {
         public string installString = "character install value";
         public string installStringForTag1 = "character string tag1";
-        protected override void InstallBinding()
+        public override void InstallBinding()
         {
-            //Debug.Log($"character install binding");
+            Debug.Log($"{gameObject.name} install binding");
             ContainerBinding.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
             ContainerBinding.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(8, 8, 8));
             ContainerBinding.Bind<string>().To<string>().FromInstance(installString);

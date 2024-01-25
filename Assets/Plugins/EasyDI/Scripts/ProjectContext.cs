@@ -38,10 +38,14 @@ namespace EasyDI
             set => ins = value;
         }
         #endregion
+        public bool IsAutoSearchInstallerInThisGameObject = true;
+        [SerializeField] public List<MonoInstaller> MonoInstaller = new List<MonoInstaller>();
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
+            Debug.Log($"project context awake!!");
+            Init();
+
             #region Singleton
             if (ins == null)
                 ins = this;
@@ -54,6 +58,25 @@ namespace EasyDI
             #endregion
             DontDestroyOnLoad(this);
 
+        }
+
+        protected override void Init()
+        {
+            if (!isInit)
+            {
+                if (IsAutoSearchInstallerInThisGameObject)
+                    if (MonoInstaller.FindAll(_ => _ != null).Count() == 0)
+                        foreach (var installer in GetComponents<MonoInstaller>())
+                        {
+                            if (!MonoInstaller.Contains(installer))
+                            {
+                                MonoInstaller.Add(installer);
+                            }
+                        }
+
+                InstallerList.AddRange(MonoInstaller);
+            }
+            base.Init();
         }
 
         Dictionary<string, ContextBase> dictSceneContext = new Dictionary<string, ContextBase>();
@@ -91,47 +114,5 @@ namespace EasyDI
             return null;
         }
 
-        private void Start()
-        {
-            TestLog();
-        }
-
-        private void TestLog()
-        {
-            Debug.Log($"Start Project Context");
-            var di = new TestDI();
-            InjectFor(di);
-            Debug.Log($"sau khi inject: {JsonUtility.ToJson(di).ToString()}");
-
-            //List<MemberInfo> memberInfoOut = new List<MemberInfo>();
-            //List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
-            //getAllMemberNeedInject(typeof(TestDI), memberInfoOut, injectAttributeOut);
-            //for (int i = 0; i < memberInfoOut.Count; i++)
-            //{
-            //    var memberInfor = memberInfoOut[i];
-            //    var injectAttribute = injectAttributeOut[i];
-            //    Debug.Log($"type member: {memberInfor}");
-            //    Debug.Log($"member has Inject:{injectAttribute.Tag}");
-
-            //}
-        }
-
-        class TestDI
-        {
-            [Inject] public IMoveable moveable;
-            [Inject] string filedString1;
-            [field: SerializeField][Inject] public float Properties1 { get; set; }
-
-            [Inject]
-            void Method1(Vector3 pos, IMoveable moveable)
-            {
-                Debug.Log($"pos was injected: {pos}");
-            }
-
-            void MethodNotInject()
-            {
-
-            }
-        }
     }
 }

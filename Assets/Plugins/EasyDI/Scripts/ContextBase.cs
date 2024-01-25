@@ -15,20 +15,21 @@ namespace EasyDI
     {
         ContainerBinding containerBinding = new ContainerBinding();
         //ContainerInjectMember containerInjectMember = new ContainerInjectMember();
-        [SerializeField] List<MonoInstaller> monoInstallerList = new List<MonoInstaller>();
+        [SerializeField] List<IInstallerBase> installerList = new List<IInstallerBase>();
 
-        public List<MonoInstaller> MonoInstallerList { get => monoInstallerList; private set => monoInstallerList = value; }
+        public List<IInstallerBase> InstallerList { get => installerList; private set => installerList = value; }
         public ContainerBinding ContainerBinding { get => containerBinding; }
         //public ContainerInjectMember ContainerInjectMember { get => containerInjectMember; }
 
         ContextBase contextParent;
 
         protected abstract ContextBase GetParentContext();
-        bool isInit = false;
-        protected void Init()
+        protected bool isInit = false;
+        protected virtual void Init()
         {
             if (!isInit)
             {
+                //Debug.Log($"{gameObject.name} INITTTT");
                 //containerInjectMember = new ContainerInjectMember();
                 containerBinding = new ContainerBinding();
                 contextParent = GetParentContext();
@@ -37,10 +38,6 @@ namespace EasyDI
             }
         }
 
-        protected virtual void Awake()
-        {
-            Init();
-        }
 
         protected virtual void OnDestroy()
         {
@@ -52,10 +49,12 @@ namespace EasyDI
         /// </summary>
         private void GetAllBindInforFromInstallerList()
         {
-            foreach (var monoInstaller in monoInstallerList)
+            if (InstallerList.Count() == 0)
+                EasyDILog.LogWarning($"Context has name: {name} doesn't have InstallerList");
+            foreach (var installer in InstallerList)
             {
-                monoInstaller.Init();
-                foreach (var item in monoInstaller.ContainerBinding.Dict_InjectName_And_BindInfor)
+                installer.Init();
+                foreach (var item in installer.ContainerBinding.Dict_InjectName_And_BindInfor)
                 {
                     containerBinding.AddBinding(item.Key, item.Value);
                 }
@@ -131,11 +130,12 @@ namespace EasyDI
 
                     if (_tryGetConditionFromThisAndChild(key, out infor))
                     {
-                        filedType.SetValue(obj, infor.ObjectData);
+                        var data = getObjectDataFromBindInfor(obj, infor, member);
+                        filedType.SetValue(obj, data);
                     }
                     else
                     {
-                        EasyDILog.LogError($"Can't find binding {filedType.FieldType} for field: {filedType}!!");
+                        EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
                     }
                 }
 
@@ -151,11 +151,12 @@ namespace EasyDI
                         var key = EasyDIUltilities.BuildKeyInject(item, injectAttribute.Tag);
                         if (_tryGetConditionFromThisAndChild(key, out infor))
                         {
-                            args[i] = infor.ObjectData;
+                            var data = getObjectDataFromBindInfor(obj, infor, member);
+                            args[i] = data;
                         }
                         else
                         {
-                            EasyDILog.LogError($"Can't find binding {item} for Method: {methodInfor}!!");
+                            EasyDILog.LogError($"Can't find binding key {key} for Method: {methodInfor.Name}!!");
                         }
                     }
                     methodInfor.Invoke(obj, args);
@@ -167,14 +168,30 @@ namespace EasyDI
                     var key = EasyDIUltilities.BuildKeyInject(proType.PropertyType, injectAttribute.Tag);
                     if (_tryGetConditionFromThisAndChild(key, out infor))
                     {
-                        proType.SetValue(obj, infor.ObjectData);
+                        var data = getObjectDataFromBindInfor(obj, infor, member);
+                        proType.SetValue(obj, data);
                     }
                     else
                     {
-                        EasyDILog.LogError($"Can't find binding {proType.PropertyType} for properties: {proType}!!");
+                        EasyDILog.LogError($"Can't find binding {proType.PropertyType.Name} for properties: {proType.Name}!!");
                     }
                 }
 
+
+                object getObjectDataFromBindInfor(object instance, BindInfor bindInfor, MemberInfo memberInfo)
+                {
+                    //Debug.Log($"bind: {instance.GetType()}");
+                    if (bindInfor.CustomGetInstancePredict != null && bindInfor.ObjectData == null)
+                        return bindInfor.CustomGetInstancePredict?.Invoke(instance, memberInfo);
+                    if (bindInfor.CustomGetInstancePredict == null && bindInfor.ObjectData != null)
+                    {
+                        return bindInfor.ObjectData;
+
+                    }
+                    EasyDILog.LogError("Both bindInfor.CustomGetInstancePredict and bindInfor.ObjectData not Null!!");
+                    return bindInfor.ObjectData;
+
+                }
             }
 
             static void _combineConditions(ref Dictionary<string, BindInfor> outDict, Dictionary<string, BindInfor> dict1, Dictionary<string, BindInfor> dict2)

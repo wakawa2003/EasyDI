@@ -7,9 +7,9 @@ namespace EasyDI
 {
     public class WeaponInstaller : MonoInstaller
     {
-        protected override void InstallBinding()
+        public override void InstallBinding()
         {
-         
+
             ContainerBinding.Bind<string>("tag1").To<string>().FromInstance("Weapon for tag1");
             ContainerBinding.Bind<float>().To<float>().FromInstance(999999f);
         }

@@ -414,8 +414,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e387ce5954018544c96f2c64b6f0e9ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 661012527}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!114 &661012527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,12 +490,12 @@ GameObject:
   - component: {fileID: 1390371144}
   - component: {fileID: 1390371143}
   m_Layer: 0
-  m_Name: Character
+  m_Name: Character 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1390371141
 Transform:
   m_ObjectHideFlags: 0
@@ -540,6 +540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   installString: character install value 2
+  installStringForTag1: character string tag1
 --- !u!114 &1390371144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,8 +553,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e869dbc9250ad409062faa29c38a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monoInstallerList:
-  - {fileID: 1390371143}
+  IsAutoSearchInstallerInThisGameObject: 1
+  MonoInstaller: []
 --- !u!1 &2140753278
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,7 +28,7 @@ namespace EasyDI
         {
             if (Dict_InjectName_And_BindInfor.ContainsKey(injectKey))
             {
-                EasyDILog.LogError($"Exist more than one {injectKey} binding in this container!");
+                EasyDILog.LogError($"Exist more than one \"{injectKey}\" binding in this container!");
             }
             else
             {
@@ -44,11 +44,26 @@ namespace EasyDI
         /// <summary>
         /// Not Null when set in binding.
         /// </summary>
-        public object ObjectData { get; set; }
+        object objectData;
+
+        public object ObjectData
+        {
+            get => objectData; set => objectData = value;
+        }
+
         public EGetInstanceMethod GetInstanceMethod { get; set; }
         public EnumTreatWithInstanceMethod TreatWithInstanceMethod { get; set; }
+        /// <summary>
+        /// object: instance object.
+        /// member: member need inject in object
+        /// </summary>
         public Func<object, MemberInfo, object> CustomGetInstancePredict { get; set; }
         public Func<object, MemberInfo, bool> WherePredict { get; set; }
+
+        //object getObjectData(object instance)
+        //{
+        //    CustomGetInstancePredict.
+        //}
 
         /// <summary>
         /// Method how to get instance.
@@ -65,6 +80,7 @@ namespace EasyDI
         {
             UnSet, Singleton, Transient
         }
+
     }
     public class BindReturn<a>
     {
@@ -76,12 +92,12 @@ namespace EasyDI
             this.bindInfor = bindInfor;
         }
 
-        public ToReturn<b> To<b>() where b : a
+        public ToReturn<a, b> To<b>() where b : a
         {
-            return new ToReturn<b>(bindInfor);
+            return new ToReturn<a, b>(bindInfor);
         }
     }
-    public class ToReturn<a>
+    public class ToReturn<t, a>
     {
         BindInfor bindInfor;
         FromReturn<a> fromReturn;
@@ -96,12 +112,36 @@ namespace EasyDI
         public FromReturn<a> FromComponentInChild()
         {
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.ItSelfAndComponentInChild;
+            bindInfor.CustomGetInstancePredict = (ins, member) =>
+            {
+                if (ins is MonoBehaviour)
+                {
+                    return (ins as MonoBehaviour).GetComponentInChildren<t>();
+                }
+                else
+                {
+                    EasyDILog.LogError($"{ins.GetType().Name} is Not Monobehaviour!!!!");
+                }
+                return null;
+            };
             return fromReturn;
         }
 
         public FromReturn<a> FromThisGameObject()
         {
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.OnlyThisGameObject;
+            bindInfor.CustomGetInstancePredict = (ins, member) =>
+            {
+                if (ins is MonoBehaviour)
+                {
+                    return (ins as MonoBehaviour).GetComponent<t>();
+                }
+                else
+                {
+                    EasyDILog.LogError($"{ins.GetType().Name} is Not Monobehaviour!!!!");
+                }
+                return null;
+            };
             return fromReturn;
         }
 
@@ -109,6 +149,18 @@ namespace EasyDI
         public FromReturn<a> FromThisAndParent()
         {
             bindInfor.GetInstanceMethod = BindInfor.EGetInstanceMethod.ItSelfAndComponentInParent;
+            bindInfor.CustomGetInstancePredict = (ins, member) =>
+            {
+                if (ins is MonoBehaviour)
+                {
+                    return (ins as MonoBehaviour).GetComponentInParent<t>();
+                }
+                else
+                {
+                    EasyDILog.LogError($"{ins.GetType().Name} is Not Monobehaviour!!!!");
+                }
+                return null;
+            };
             return fromReturn;
         }
 
@@ -122,7 +174,10 @@ namespace EasyDI
         {
             bindInfor.WherePredict = func;
         }
-
+        /// <summary>
+        /// object: instance object.
+        /// member: member need inject in object
+        /// </summary>
         public void CustomGetInstance(Func<object, MemberInfo, object> func)
         {
             bindInfor.CustomGetInstancePredict = func;

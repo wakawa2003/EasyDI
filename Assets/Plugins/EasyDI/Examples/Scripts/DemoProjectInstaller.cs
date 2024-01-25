@@ -8,7 +8,7 @@ namespace Demo
 {
     public class DemoProjectInstaller : MonoInstaller
     {
-        protected override void InstallBinding()
+        public override void InstallBinding()
         {
             Debug.Log($"project install binding");
             ContainerBinding.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
