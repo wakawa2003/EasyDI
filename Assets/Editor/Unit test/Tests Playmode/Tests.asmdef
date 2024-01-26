@@ -1,15 +1,14 @@
 {
     "name": "Tests",
-    "rootNamespace": "",
+    "rootNamespace": "EasyDI.UnitTest",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "EasyDI"
+        "EasyDI",
+        ""
     ],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "Editor"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [

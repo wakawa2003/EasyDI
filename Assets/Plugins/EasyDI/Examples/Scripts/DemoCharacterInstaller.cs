@@ -14,7 +14,7 @@ namespace EasyDI.Demo
             ContainerBinding.Bind<IMoveable>().To<CharacterBehaviour>().FromComponentInChild();
             ContainerBinding.Bind<Vector3>().To<Vector3>().FromInstance(new Vector3(8, 8, 8));
             ContainerBinding.Bind<string>().To<string>().FromInstance(installString);
-            //ContainerBinding.Bind<string>("tag1").To<string>().FromInstance(installStringForTag1);
+            ContainerBinding.Bind<string>("tag1").To<string>().FromInstance(installStringForTag1);
             ContainerBinding.Bind<float>().To<float>().FromInstance(7777);
         }
     }

@@ -40,12 +40,10 @@ namespace EasyDI
         #endregion
         public bool IsAutoSearchInstallerInThisGameObject = true;
         [SerializeField] public List<MonoInstaller> MonoInstaller = new List<MonoInstaller>();
+        Dictionary<string, ContextBase> dictSceneContext = new Dictionary<string, ContextBase>();
 
         protected void Awake()
         {
-            Debug.Log($"project context awake!!");
-            Init();
-
             #region Singleton
             if (ins == null)
                 ins = this;
@@ -55,7 +53,10 @@ namespace EasyDI
                     Destroy(gameObject);
                 return;
             }
+
             #endregion
+            Debug.Log($"project context awake!!");
+            Init();
             DontDestroyOnLoad(this);
 
         }
@@ -79,7 +80,6 @@ namespace EasyDI
             base.Init();
         }
 
-        Dictionary<string, ContextBase> dictSceneContext = new Dictionary<string, ContextBase>();
         public ContextBase GetSceneContext(string nameScene)
         {
             if (dictSceneContext.ContainsKey(nameScene))
@@ -102,11 +102,11 @@ namespace EasyDI
         {
             if (dictSceneContext.ContainsKey(nameScene))
                 dictSceneContext.Remove(nameScene);
-            else
-            {
-                EasyDILog.LogError($"Can't found Scene Context in Scene: {nameScene}!");
+            //else
+            //{
+            //    EasyDILog.LogError($"Can't found Scene Context in Scene: {nameScene}!");
 
-            }
+            //}
         }
 
         protected override ContextBase GetParentContext()
