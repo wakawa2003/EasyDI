@@ -1,0 +1,25 @@
+{
+  "name": "com.delaygame.EasyDI",
+  "version": "1.0.0",
+  "displayName": "EasyDI",
+  "description": "DI framework by Doan Tuan",
+  "unity": "2022.3",
+  "unityRelease": "0b5",
+  "documentationUrl": "https://github.com/wakawa2003/EasyDI",
+  "changelogUrl": "https://github.com/wakawa2003/EasyDI",
+  "licensesUrl": "https://github.com/wakawa2003/EasyDI",
+  "dependencies": {
+    "com.[company-name].some-package": "1.0.0",
+    "com.[company-name].other-package": "2.0.0"
+  },
+  "keywords": [
+    "DI",
+    "EasyDI",
+    "keyword3"
+  ],
+  "author": {
+    "name": "Doan Tuan",
+    "email": "wakawa2003@gmail.com",
+    "url": "https://www.unity3d.com"
+  }
+}

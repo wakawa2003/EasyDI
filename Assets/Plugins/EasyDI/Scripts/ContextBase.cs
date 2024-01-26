@@ -1,3 +1,5 @@
+using EasyDI;
+using EasyDI.Demo;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,13 +16,10 @@ namespace EasyDI
     public abstract class ContextBase : MonoBehaviour
     {
         ContainerBinding containerBinding = new ContainerBinding();
-        //ContainerInjectMember containerInjectMember = new ContainerInjectMember();
         [SerializeField] List<IInstallerBase> installerList = new List<IInstallerBase>();
 
         public List<IInstallerBase> InstallerList { get => installerList; private set => installerList = value; }
         public ContainerBinding ContainerBinding { get => containerBinding; }
-        //public ContainerInjectMember ContainerInjectMember { get => containerInjectMember; }
-
         ContextBase contextParent;
 
         protected abstract ContextBase GetParentContext();
@@ -84,7 +83,7 @@ namespace EasyDI
                 //inject cho obj ngoai tru nhung infor child
                 List<MemberInfo> memberInfoOut = new List<MemberInfo>();
                 List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
-                getAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
+                GetAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
                 for (int i = 0; i < memberInfoOut.Count; i++)
                 {
                     var memberInfor = memberInfoOut[i];
@@ -212,10 +211,23 @@ namespace EasyDI
             }
         }
 
-        protected void getAllMemberNeedInject(Type type, List<MemberInfo> memberInfoOut, List<InjectAttribute> injectAttributeOut)
+        public static void GetAllMemberNeedInject(Type type, List<MemberInfo> memberInfoOut, List<InjectAttribute> injectAttributeOut)
         {
+            var cache = EasyDICache.Instance;
 
-            var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
+            //searching in cache
+            if (cache.HasClass(type))
+            {
+                var t = cache.GetContainerTypeInject(type);
+                memberInfoOut = t.MemberList;
+                injectAttributeOut = t.InjectAttributeList;
+            }
+            else//resolve if not found
+            {
+                var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
+                cache.AddInjectClass(type, memberInfoOut, injectAttributeOut);
+
+            }
 
             bool filer(MemberInfo m, object filterCriteria)
             {
@@ -234,3 +246,4 @@ namespace EasyDI
 
     }
 }
+

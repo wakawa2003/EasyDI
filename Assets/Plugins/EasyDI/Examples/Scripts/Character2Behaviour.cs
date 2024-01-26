@@ -8,7 +8,7 @@ namespace EasyDI
     {
 
         [Inject] public string stringInjected;
-        [Inject] public Transform transformInjected;
+      
 
         public override void InstallBinding()
         {
