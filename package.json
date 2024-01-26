@@ -9,8 +9,8 @@
   "changelogUrl": "https://github.com/wakawa2003/EasyDI",
   "licensesUrl": "https://github.com/wakawa2003/EasyDI",
   "dependencies": {
-    "com.[company-name].some-package": "1.0.0",
-    "com.[company-name].other-package": "2.0.0"
+   // "com.[company-name].some-package": "1.0.0",
+   // "com.[company-name].other-package": "2.0.0"
   },
   "keywords": [
     "DI",
