@@ -60,7 +60,7 @@ namespace EasyDI
             InjectFor(obj, containerBinding.Dict_InjectName_And_BindInfor);
         }
 
-        public void InjectFor(object obj, Dictionary<string, BindInfor> inforFromChildContext)
+        public void InjectFor(object objectNeedInject, Dictionary<string, BindInfor> inforFromChildContext)
         {
             Init();
             Dictionary<string, BindInfor> newInforFromChildContextAndThis = new Dictionary<string, BindInfor> { };
@@ -70,21 +70,22 @@ namespace EasyDI
             {
                 //b1: tong hop infor condition from child and it self
                 //b2: call => contextParent.InjectFor(obj, inforThisAndChild);
-                contextParent.InjectFor(obj, newInforFromChildContextAndThis);
+                contextParent.InjectFor(objectNeedInject, newInforFromChildContextAndThis);
             }
             else
             {
                 //inject cho obj ngoai tru nhung infor child
                 List<MemberInfo> memberInfoOut = new List<MemberInfo>();
                 List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
-                GetAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
+                GetAllMemberNeedInject(objectNeedInject.GetType(), memberInfoOut, injectAttributeOut);
                 for (int i = 0; i < memberInfoOut.Count; i++)
                 {
                     var memberInfor = memberInfoOut[i];
                     var injectAttribute = injectAttributeOut[i];
                     //Debug.Log($"type member: {item.DeclaringType.FullName}");
                     //Debug.Log($"member has Inject:{item}");
-                    _setDataForMember(obj, memberInfor, injectAttribute);
+
+                    _setDataForMember(objectNeedInject, memberInfor, injectAttribute);
                 }
             }
 
@@ -115,16 +116,19 @@ namespace EasyDI
                         );
                 }
 
-                void _setForField(object obj, MemberInfo member, InjectAttribute injectAttribute)
+                void _setForField(object value, MemberInfo member, InjectAttribute injectAttribute)
                 {
                     var filedType = (member as FieldInfo);
-                    BindInfor infor = null;
+                    BindInfor bindInfor = null;
                     var key = EasyDIUltilities.BuildKeyInject(filedType.FieldType, injectAttribute.Tag);
 
-                    if (_tryGetConditionFromThisAndChild(key, out infor))
+                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
                     {
-                        var data = getObjectDataFromBindInfor(obj, infor, member);
-                        filedType.SetValue(obj, data);
+                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
+                        {
+                            var data = getObjectDataFromBindInfor(value, bindInfor, member);
+                            filedType.SetValue(value, data);
+                        }
                     }
                     else
                     {
@@ -139,13 +143,18 @@ namespace EasyDI
                     object[] args = new object[@params.Length];
                     for (int i = 0; i < @params.Length; i++)
                     {
-                        BindInfor infor = null;
+                        BindInfor bindInfor = null;
                         var item = @params[i].ParameterType;
                         var key = EasyDIUltilities.BuildKeyInject(item, injectAttribute.Tag);
-                        if (_tryGetConditionFromThisAndChild(key, out infor))
+                        if (_tryGetConditionFromThisAndChild(key, out bindInfor))
                         {
-                            var data = getObjectDataFromBindInfor(obj, infor, member);
-                            args[i] = data;
+                            //check wherePredict bofore Inject
+                            if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
+                            {
+                                var data = getObjectDataFromBindInfor(obj, bindInfor, member);
+                                args[i] = data;
+
+                            }
                         }
                         else
                         {
@@ -157,12 +166,15 @@ namespace EasyDI
                 void _setForProperties(object obj, MemberInfo member, InjectAttribute injectAttribute)
                 {
                     var proType = ((PropertyInfo)member);
-                    BindInfor infor = null;
+                    BindInfor bindInfor = null;
                     var key = EasyDIUltilities.BuildKeyInject(proType.PropertyType, injectAttribute.Tag);
-                    if (_tryGetConditionFromThisAndChild(key, out infor))
+                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
                     {
-                        var data = getObjectDataFromBindInfor(obj, infor, member);
-                        proType.SetValue(obj, data);
+                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
+                        {
+                            var data = getObjectDataFromBindInfor(obj, bindInfor, member);
+                            proType.SetValue(obj, data);
+                        }
                     }
                     else
                     {
@@ -202,6 +214,19 @@ namespace EasyDI
                         outDict.Add(a.Key, a.Value);
                 }
 
+            }
+
+            bool checkWherePredict(Func<object, MemberInfo, bool> wherePredict, object instance, MemberInfo memberInfo)
+            {
+                if (wherePredict != null)
+                {
+                    return wherePredict.Invoke(instance, memberInfo);
+                }
+                else
+                {
+                    EasyDILog.LogError("WherePredict is Null, please don't set to Null!!!!");
+                }
+                return false;
             }
         }
 

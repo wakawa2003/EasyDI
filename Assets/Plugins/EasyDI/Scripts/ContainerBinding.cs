@@ -57,7 +57,7 @@ namespace EasyDI
         /// member: member need inject in object
         /// </summary>
         public Func<object, MemberInfo, object> CustomGetInstancePredict { get; set; }
-        public Func<object, MemberInfo, bool> WherePredict { get; set; }
+        public Func<object, MemberInfo, bool> WherePredict { get; set; } = delegate { return true; };//default is alway true
 
         //object getObjectData(object instance)
         //{
@@ -169,14 +169,22 @@ namespace EasyDI
             return fromReturn;
         }
 
+
+        /// <summary>
+        /// <see langword="object"/> : instance object
+        /// <para> <see langword="MemberInfo"/> : member </para>
+        /// </summary>
+        /// <param name="func"></param>
         public void Where(Func<object, MemberInfo, bool> func)
         {
             bindInfor.WherePredict = func;
         }
+
         /// <summary>
-        /// object: instance object.
-        /// member: member need inject in object
+        /// <see langword="object"/> : instance object
+        /// <para> <see langword="MemberInfo"/> : member </para>
         /// </summary>
+        /// <param name="func"></param>
         public void CustomGetInstance(Func<object, MemberInfo, object> func)
         {
             bindInfor.CustomGetInstancePredict = func;

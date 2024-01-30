@@ -9,6 +9,7 @@ namespace EasyDI.UnitTest
         [Inject] public string StringProperties1 { get; set; }
         [Inject] public string stringField1;
         [Inject("tag1")] public string stringFieldTag1;
+        [Inject("tag2")] public string stringFieldTag2;
         public string stringInMethod;
 
         [Inject]

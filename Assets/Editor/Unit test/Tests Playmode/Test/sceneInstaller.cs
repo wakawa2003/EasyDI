@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace EasyDI.UnitTest
 {
-    public class sceneInstaller : MonoBehaviour
+    public class sceneInstaller : MonoInstaller
     {
-        // Start is called before the first frame update
-        void Start()
+        public static string stringInstallForTag2 = "scene instaler string tag2";
+
+        public override void InstallBinding()
         {
-        
+            ContainerBinding.Bind<string>("tag2").To<string>().CustomGetInstance((obj, mem) =>
+            {
+                return stringInstallForTag2;
+            });
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+
     }
 }

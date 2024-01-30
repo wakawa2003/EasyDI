@@ -33,6 +33,8 @@ namespace EasyDI.UnitTest
                 Debug.LogError("can't overide project context value!");
             if (characterController.stringField1 == projectInstaller.stringDefault)
                 Debug.LogError("can't overide project context value!");
+            if (characterController.stringFieldTag2 != sceneInstaller.stringInstallForTag2)
+                Debug.LogError("can't overide project context value!");
             if (characterController.stringInMethod == projectInstaller.stringDefault)
                 Debug.LogError("can't overide project context value!");
 
