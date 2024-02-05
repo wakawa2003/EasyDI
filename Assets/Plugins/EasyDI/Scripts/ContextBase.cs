@@ -126,7 +126,7 @@ namespace EasyDI
                     {
                         if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
                         {
-                            var data = getObjectDataFromBindInfor(value, bindInfor, member);
+                            var data = _getObjectDataFromBindInfor(value, bindInfor, member);
                             filedType.SetValue(value, data);
                         }
                     }
@@ -151,7 +151,7 @@ namespace EasyDI
                             //check wherePredict bofore Inject
                             if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
                             {
-                                var data = getObjectDataFromBindInfor(obj, bindInfor, member);
+                                var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
                                 args[i] = data;
 
                             }
@@ -172,7 +172,7 @@ namespace EasyDI
                     {
                         if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
                         {
-                            var data = getObjectDataFromBindInfor(obj, bindInfor, member);
+                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
                             proType.SetValue(obj, data);
                         }
                     }
@@ -183,20 +183,76 @@ namespace EasyDI
                 }
 
 
-                object getObjectDataFromBindInfor(object instance, BindInfor bindInfor, MemberInfo memberInfo)
+                static object _getObjectDataFromBindInfor(object instanceNeedInject, BindInfor bindInfor, MemberInfo memberInfoNeedInject)
                 {
-                    //Debug.Log($"bind: {instance.GetType()}");
-                    if (bindInfor.CustomGetInstancePredict != null && bindInfor.ObjectData == null)
-                        return bindInfor.CustomGetInstancePredict?.Invoke(instance, memberInfo);
-                    if (bindInfor.CustomGetInstancePredict == null && bindInfor.ObjectData != null)
+                    object r = null;
+                    switch (bindInfor.TreatWithInstanceMethod)
                     {
-                        return bindInfor.ObjectData;
+                        case BindInfor.EnumTreatWithInstanceMethod.UnSet:
+                            goto case BindInfor.EnumTreatWithInstanceMethod.Transient;
+                            break;
+                        case BindInfor.EnumTreatWithInstanceMethod.Singleton:
+                            if (_checkFromInstanceCache(out r, memberInfoNeedInject))
+                            {
+                                if (r == null)
+                                {
+                                    EasyDILog.LogError($"Inject Singleton has type \'{memberInfoNeedInject.Name}\' but value is null. Auto get new intance from predict!!");
+                                    r = _getDataAndAddToCache(instanceNeedInject, bindInfor, memberInfoNeedInject);
+                                }
+                            }
+                            else
+                            {
+                                //add new value to cache
+                                r = _getDataAndAddToCache(instanceNeedInject, bindInfor, memberInfoNeedInject);
+                            }
 
+                            break;
+                        case BindInfor.EnumTreatWithInstanceMethod.Transient:
+                            r = _getObjectFromCustomPredict(instanceNeedInject, bindInfor, memberInfoNeedInject);
+                            break;
+                        default:
+                            break;
                     }
-                    EasyDILog.LogError("Both bindInfor.CustomGetInstancePredict and bindInfor.ObjectData not Null!!");
-                    return bindInfor.ObjectData;
 
+                    return r;
+
+                    static bool _checkFromInstanceCache(out object outData, MemberInfo memberInfo)
+                    {
+                        var type = memberInfo.GetUnderlyingType();
+                        if (EasyDICache.Instance.HasInstanceCache(type))
+                        {
+                            outData = EasyDICache.Instance.GetInstanceCache(type);
+                            return true;
+                        }
+                        else
+                        {
+                            outData = null;
+                            return false;
+                        }
+                    }
+
+                    static object _getObjectFromCustomPredict(object instanceNeedInject, BindInfor bindInfor, MemberInfo memberInfoNeedInject)
+                    {
+                        //Debug.Log($"bind: {instance.GetType()}");
+                        if (bindInfor.CustomGetInstancePredict != null && bindInfor.ObjectData == null)
+                            return bindInfor.CustomGetInstancePredict?.Invoke(instanceNeedInject, memberInfoNeedInject);
+                        if (bindInfor.CustomGetInstancePredict == null && bindInfor.ObjectData != null)
+                        {
+                            return bindInfor.ObjectData;
+
+                        }
+                        EasyDILog.LogError("Both bindInfor.CustomGetInstancePredict and bindInfor.ObjectData not Null!!");
+                        return bindInfor.ObjectData;
+                    }
+
+                    static object _getDataAndAddToCache(object instanceNeedInject, BindInfor bindInfor, MemberInfo memberInfoNeedInject)
+                    {
+                        object r = _getObjectFromCustomPredict(instanceNeedInject, bindInfor, memberInfoNeedInject);
+                        EasyDICache.Instance.AddInstanceCache(memberInfoNeedInject.GetUnderlyingType(), r);
+                        return r;
+                    }
                 }
+
             }
 
             static void _combineConditions(ref Dictionary<string, BindInfor> outDict, Dictionary<string, BindInfor> dict1, Dictionary<string, BindInfor> dict2)

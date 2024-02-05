@@ -10,6 +10,7 @@ namespace EasyDI
     public class EasyDICache
     {
         Dictionary<Type, ContainerTypeInject> dictInject = new Dictionary<Type, ContainerTypeInject>();
+        Dictionary<Type, object> dictInstance = new Dictionary<Type, object>();
         private static EasyDICache instance;
 
         public static EasyDICache Instance
@@ -28,9 +29,7 @@ namespace EasyDI
 
         }
 
-
-
-
+        #region Inject Cache
         public void AddInjectClass(Type type, List<MemberInfo> memberInfoList, List<InjectAttribute> injectAttributeList)
         {
             if (!dictInject.ContainsKey(type))
@@ -73,5 +72,46 @@ namespace EasyDI
                 InjectAttributeList = injectAttributeList;
             }
         }
+        #endregion
+
+        #region Instance Cache
+        public void AddInstanceCache(Type type, object obj)
+        {
+            if (dictInstance.ContainsKey(type))
+            {
+                if (dictInstance[type] == null)//reapply when null
+                    dictInstance[type] = obj;
+            }
+            else
+            {
+                dictInstance.Add(type, obj);
+            }
+        }
+
+        public void RemoveInstanceCache(Type type)
+        {
+            if (dictInstance.ContainsKey(type))
+            {
+                dictInstance.Remove(type);
+            }
+        }
+
+        public object GetInstanceCache(Type type)
+        {
+            if (dictInstance.ContainsKey(type))
+            {
+                return dictInstance[type];
+            }
+            else
+            {
+                EasyDILog.LogError($"Doesn't contain Instance cache: \'{type.Name}\'");
+                return null;
+            }
+        }
+        public bool HasInstanceCache(Type type)
+        {
+            return dictInstance.ContainsKey(type);
+        }
+        #endregion
     }
 }

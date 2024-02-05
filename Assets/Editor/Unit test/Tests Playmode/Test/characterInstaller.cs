@@ -11,7 +11,7 @@ namespace EasyDI.UnitTest
         public override void InstallBinding()
         {
             ContainerBinding.Bind<string>().To<string>().FromInstance(stringDefault);
-            ContainerBinding.Bind<string>("tag1").To<string>().FromInstance(stringDefault);
+            ContainerBinding.Bind<string>(tags.tag1).To<string>().FromInstance(stringDefault);
             ContainerBinding.Bind<ICharacter>().To<characterController>().FromInstance(GetComponent<characterController>());
         }
 

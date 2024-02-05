@@ -8,8 +8,11 @@ namespace EasyDI.UnitTest
     {
         [Inject] public string StringProperties1 { get; set; }
         [Inject] public string stringField1;
-        [Inject("tag1")] public string stringFieldTag1;
-        [Inject("tag2")] public string stringFieldTag2;
+        [Inject] public classIsSingleton classIsSingleton;
+        [Inject(tags.tag1)] public string stringFieldTag1;
+        [Inject(tags.tag2)] public string stringFieldTag2;
+        [Inject(tags.tagSingleton)] public string stringFieldSingletonHasTag;
+
         public string stringInMethod;
 
         [Inject]

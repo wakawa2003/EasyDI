@@ -37,7 +37,8 @@ namespace EasyDI.UnitTest
                 Debug.LogError("can't overide project context value!");
             if (characterController.stringInMethod == projectInstaller.stringDefault)
                 Debug.LogError("can't overide project context value!");
-
+            if (characterController.stringFieldSingletonHasTag != sceneInstaller.stringTagForTagSingleton)
+                Debug.LogError("can't inject singleton!");
             //for gun
             if (string.IsNullOrEmpty(gunController.stringField))
                 Debug.LogError("inject fail");
@@ -46,7 +47,10 @@ namespace EasyDI.UnitTest
             if (gunController.stringField == projectInstaller.stringDefault)
                 Debug.LogError("can't overide project context value!");
 
-
+            yield return new WaitForSeconds(0.5f);
+            //check singleton inject
+            if (characterController.classIsSingleton != gunController.classIsSingleton)
+                Debug.LogError("singleton inject fail!");
 
 
             yield return null;
@@ -61,6 +65,7 @@ namespace EasyDI.UnitTest
                 yield return setupProjectContext();
                 yield return setupSceneContext();
                 yield return setupGameObject();
+                yield return setupIngameControllerTest();
                 yield return new EnterPlayMode();
             }
 
@@ -115,6 +120,13 @@ namespace EasyDI.UnitTest
                 yield return null;
             }
 
+            IEnumerator setupIngameControllerTest()
+            {
+                Debug.Log($"setup ingameControllerTest");
+                var obj = new GameObject("ingame Controller");
+                obj.gameObject.AddComponent<ingameControllerTest>();
+                yield return null;
+            }
         }
     }
 

@@ -8,5 +8,6 @@ namespace EasyDI.UnitTest
     {
         [Inject] public ICharacter characterOwner;
         [Inject] public string stringField;
+        [Inject] public classIsSingleton classIsSingleton;
     }
 }

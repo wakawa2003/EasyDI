@@ -175,9 +175,10 @@ namespace EasyDI
         /// <para> <see langword="MemberInfo"/> : member </para>
         /// </summary>
         /// <param name="func"></param>
-        public void Where(Func<object, MemberInfo, bool> func)
+        public FromReturn<a> Where(Func<object, MemberInfo, bool> func)
         {
             bindInfor.WherePredict = func;
+            return fromReturn;
         }
 
         /// <summary>
@@ -185,9 +186,10 @@ namespace EasyDI
         /// <para> <see langword="MemberInfo"/> : member </para>
         /// </summary>
         /// <param name="func"></param>
-        public void CustomGetInstance(Func<object, MemberInfo, object> func)
+        public FromReturn<a> CustomGetInstance(Func<object, MemberInfo, object> func)
         {
             bindInfor.CustomGetInstancePredict = func;
+            return fromReturn;
         }
     }
 
@@ -201,6 +203,14 @@ namespace EasyDI
             this.bindInfor = bindInfor;
         }
 
+        public void AsSingleton()
+        {
+            bindInfor.TreatWithInstanceMethod = BindInfor.EnumTreatWithInstanceMethod.Singleton;
+        }
+        public void AsTransient()
+        {
+            bindInfor.TreatWithInstanceMethod = BindInfor.EnumTreatWithInstanceMethod.Transient;
+        }
     }
 
 }
