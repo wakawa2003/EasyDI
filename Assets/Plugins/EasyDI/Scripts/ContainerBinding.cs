@@ -14,13 +14,14 @@ namespace EasyDI
 
         public Dictionary<string, BindInfor> Dict_InjectName_And_BindInfor { get; private set; } = new Dictionary<string, BindInfor>();
 
-        public BindReturn<t> Bind<t>(string tag = "")
+        public BindReturn<t> Bind<t>(string tag = "", bool isDecore = false)
         {
             BindInfor bindInfor = new BindInfor();
-            var bindType = new BindReturn<t>(bindInfor);
+            bindInfor.IsDecore = isDecore;
+            var bindReturn = new BindReturn<t>(bindInfor);
             var key = EasyDIUltilities.BuildKeyInject(typeof(t), tag);
             AddBinding(key, bindInfor);
-            return bindType;
+            return bindReturn;
         }
 
         public void AddBinding(string injectKey, BindInfor bindInfor)
@@ -44,6 +45,7 @@ namespace EasyDI
         /// Not Null when set in binding.
         /// </summary>
         object objectData;
+        public bool IsDecore { get; set; } = false;
 
         public object ObjectData
         {

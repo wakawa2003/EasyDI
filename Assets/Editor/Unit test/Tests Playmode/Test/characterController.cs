@@ -14,11 +14,19 @@ namespace EasyDI.UnitTest
         [Inject(tags.tagSingleton)] public string stringFieldSingletonHasTag;
 
         public string stringInMethod;
+        public int intInmethod;
 
         [Inject]
         void Method(string param1)
         {
             this.stringInMethod = param1;
+        }
+
+        [Inject]
+        void Method2(string param1, int intInmethod)
+        {
+            this.stringInMethod = param1;
+            this.intInmethod = intInmethod;
         }
 
     }

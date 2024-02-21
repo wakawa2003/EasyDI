@@ -39,6 +39,8 @@ namespace EasyDI.UnitTest
                 Debug.LogError("can't overide project context value!");
             if (characterController.stringFieldSingletonHasTag != sceneInstaller.stringTagForTagSingleton)
                 Debug.LogError("can't inject singleton!");
+            if (characterController.intInmethod != characterInstaller.intInMethod)
+                Debug.LogError("can't inject singleton!");
             //for gun
             if (string.IsNullOrEmpty(gunController.stringField))
                 Debug.LogError("inject fail");

@@ -62,6 +62,12 @@ namespace EasyDI
 
         public void InjectFor(object objectNeedInject, Dictionary<string, BindInfor> inforFromChildContext)
         {
+            //Neu la decore thi:
+            //      B1: combine cac BindInfor la Decore thanh 1 list roi gui list len parentContext
+            //      B2: khi den root parent thi: uu tien inject cho cac BindInfor binh thuong roi moi den BinInfor La Decore
+            tiep
+
+            //neu
             Init();
             Dictionary<string, BindInfor> newInforFromChildContextAndThis = new Dictionary<string, BindInfor> { };
             _combineConditions(ref newInforFromChildContextAndThis, inforFromChildContext, containerBinding.Dict_InjectName_And_BindInfor);
@@ -116,7 +122,7 @@ namespace EasyDI
                         );
                 }
 
-                void _setForField(object value, MemberInfo member, InjectAttribute injectAttribute)
+                void _setForField(object obj, MemberInfo member, InjectAttribute injectAttribute)
                 {
                     var filedType = (member as FieldInfo);
                     BindInfor bindInfor = null;
@@ -126,8 +132,8 @@ namespace EasyDI
                     {
                         if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
                         {
-                            var data = _getObjectDataFromBindInfor(value, bindInfor, member);
-                            filedType.SetValue(value, data);
+                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
+                            filedType.SetValue(obj, data);
                         }
                     }
                     else
