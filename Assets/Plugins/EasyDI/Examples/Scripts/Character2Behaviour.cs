@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace EasyDI
@@ -8,8 +9,8 @@ namespace EasyDI
     {
 
         [Inject] public string stringInjected;
-      
 
+     
         public override void InstallBinding()
         {
         }

@@ -16,6 +16,7 @@ namespace EasyDI.Demo
             ContainerBinding.Bind<string>().To<string>().FromInstance(installString);
             ContainerBinding.Bind<string>("tag1").To<string>().FromInstance(installStringForTag1);
             ContainerBinding.Bind<float>().To<float>().FromInstance(7777);
+            //ContainerBinding.Bind<float>(isDecore: true).To<float>().FromInstance(7777);
         }
     }
 }

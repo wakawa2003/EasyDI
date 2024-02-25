@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -47,9 +47,20 @@ namespace EasyDI
             foreach (var installer in InstallerList)
             {
                 installer.Init();
+
+                //combine normal
                 foreach (var item in installer.ContainerBinding.Dict_InjectName_And_BindInfor)
                 {
-                    containerBinding.AddBinding(item.Key, item.Value);
+                    containerBinding.AddBinding(item.Key, item.Value, false);
+                }
+
+                //combine for decore
+                foreach (var item in installer.ContainerBinding.Dict_ListBindInforDecore)
+                {
+                    foreach (var item2 in item.Value)
+                    {
+                        containerBinding.AddBinding(item.Key, item2, true);
+                    }
                 }
 
             }
@@ -57,26 +68,28 @@ namespace EasyDI
 
         public void InjectFor(object obj)
         {
-            InjectFor(obj, containerBinding.Dict_InjectName_And_BindInfor);
+            InjectFor(obj, containerBinding.Dict_InjectName_And_BindInfor, containerBinding.Dict_ListBindInforDecore);
         }
 
-        public void InjectFor(object objectNeedInject, Dictionary<string, BindInfor> inforFromChildContext)
+        public void InjectFor(object objectNeedInject, Dictionary<string, BindInfor> bindInfor_FromChildContext, Dictionary<string, List<BindInfor>> bindInfor_Decore_FromChildContext)
         {
             //Neu la decore thi:
             //      B1: combine cac BindInfor la Decore thanh 1 list roi gui list len parentContext
             //      B2: khi den root parent thi: uu tien inject cho cac BindInfor binh thuong roi moi den BinInfor La Decore
-            tiep
+
 
             //neu
             Init();
-            Dictionary<string, BindInfor> newInforFromChildContextAndThis = new Dictionary<string, BindInfor> { };
-            _combineConditions(ref newInforFromChildContextAndThis, inforFromChildContext, containerBinding.Dict_InjectName_And_BindInfor);
-
+            Dictionary<string, BindInfor> newBindInforFromChildContextAndThis = new Dictionary<string, BindInfor> { };
+            Dictionary<string, List<BindInfor>> newBindInforDecoreFromChildContext = new();
+            _combineConditions(ref newBindInforFromChildContextAndThis, bindInfor_FromChildContext, containerBinding.Dict_InjectName_And_BindInfor);
+            _combineConditionsDecore(ref newBindInforDecoreFromChildContext, bindInfor_Decore_FromChildContext, containerBinding.Dict_ListBindInforDecore);
+            tiep
             if (contextParent != null)
             {
                 //b1: tong hop infor condition from child and it self
                 //b2: call => contextParent.InjectFor(obj, inforThisAndChild);
-                contextParent.InjectFor(objectNeedInject, newInforFromChildContextAndThis);
+                contextParent.InjectFor(objectNeedInject, newBindInforFromChildContextAndThis, newBindInforDecoreFromChildContext);
             }
             else
             {
@@ -97,7 +110,7 @@ namespace EasyDI
 
             bool _tryGetConditionFromThisAndChild(string key, out BindInfor bindInfor)
             {
-                return newInforFromChildContextAndThis.TryGetValue(key, out bindInfor);
+                return newBindInforFromChildContextAndThis.TryGetValue(key, out bindInfor);
             }
 
             void _setDataForMember(object obj, MemberInfo member, InjectAttribute injectAttribute)
@@ -274,6 +287,22 @@ namespace EasyDI
                 {
                     if (!outDict.ContainsKey(a.Key))
                         outDict.Add(a.Key, a.Value);
+                }
+
+            }
+
+            static void _combineConditionsDecore(ref Dictionary<string, List<BindInfor>> outDict, Dictionary<string, List<BindInfor>> dict1, Dictionary<string, List<BindInfor>> dict2)
+            {
+                //can phai tao dict moi
+                foreach (var a in dict1)
+                {
+                    if (!outDict.ContainsKey(a.Key))
+                        outDict.Add(a.Key, a.Value);
+                }
+                foreach (var a in dict2)
+                {
+                    if (!outDict.ContainsKey(a.Key))
+                        outDict.Add(a.Key, a.Value.ToList());
                 }
 
             }

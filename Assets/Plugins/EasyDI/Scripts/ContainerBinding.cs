@@ -13,6 +13,7 @@ namespace EasyDI
     {
 
         public Dictionary<string, BindInfor> Dict_InjectName_And_BindInfor { get; private set; } = new Dictionary<string, BindInfor>();
+        public Dictionary<string, List<BindInfor>> Dict_ListBindInforDecore { get; private set; } = new();
 
         public BindReturn<t> Bind<t>(string tag = "", bool isDecore = false)
         {
@@ -20,19 +21,35 @@ namespace EasyDI
             bindInfor.IsDecore = isDecore;
             var bindReturn = new BindReturn<t>(bindInfor);
             var key = EasyDIUltilities.BuildKeyInject(typeof(t), tag);
-            AddBinding(key, bindInfor);
+            AddBinding(key, bindInfor, isDecore);
             return bindReturn;
         }
 
-        public void AddBinding(string injectKey, BindInfor bindInfor)
+        public void AddBinding(string injectKey, BindInfor bindInfor, bool isDecore)
         {
-            if (Dict_InjectName_And_BindInfor.ContainsKey(injectKey))
+            if (!isDecore)
             {
-                EasyDILog.LogError($"Exist more than one \"{injectKey}\" binding in this container!");
+                if (Dict_InjectName_And_BindInfor.ContainsKey(injectKey))
+                {
+                    EasyDILog.LogError($"Exist more than one \"{injectKey}\" binding in this container!");
+                }
+                else
+                {
+                    Dict_InjectName_And_BindInfor.Add(injectKey, bindInfor);
+                }
             }
             else
             {
-                Dict_InjectName_And_BindInfor.Add(injectKey, bindInfor);
+                if (Dict_ListBindInforDecore.ContainsKey(injectKey))
+                {
+                    if (Dict_ListBindInforDecore[injectKey] == null)
+                        Dict_ListBindInforDecore[injectKey] = new List<BindInfor>();
+                    Dict_ListBindInforDecore[injectKey].Add(bindInfor);
+                }
+                else
+                {
+                    Dict_ListBindInforDecore.Add(injectKey, new List<BindInfor> { bindInfor });
+                }
             }
         }
 
