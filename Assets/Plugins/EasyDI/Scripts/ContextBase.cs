@@ -84,7 +84,7 @@ namespace EasyDI
             Dictionary<string, List<BindInfor>> newBindInforDecoreFromChildContext = new();
             _combineConditions(ref newBindInforFromChildContextAndThis, bindInfor_FromChildContext, containerBinding.Dict_InjectName_And_BindInfor);
             _combineConditionsDecore(ref newBindInforDecoreFromChildContext, bindInfor_Decore_FromChildContext, containerBinding.Dict_ListBindInforDecore);
-            tiep
+
             if (contextParent != null)
             {
                 //b1: tong hop infor condition from child and it self
@@ -111,6 +111,12 @@ namespace EasyDI
             bool _tryGetConditionFromThisAndChild(string key, out BindInfor bindInfor)
             {
                 return newBindInforFromChildContextAndThis.TryGetValue(key, out bindInfor);
+            }
+
+
+            bool _tryGetDecoreFromThisAndChild(string key, out List<BindInfor> decoreList)
+            {
+                return newBindInforDecoreFromChildContext.TryGetValue(key, out decoreList);
             }
 
             void _setDataForMember(object obj, MemberInfo member, InjectAttribute injectAttribute)
@@ -147,11 +153,32 @@ namespace EasyDI
                         {
                             var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
                             filedType.SetValue(obj, data);
+
+                            if (data != null)
+                            {
+                                List<BindInfor> decoreList = new List<BindInfor>();
+                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
+                                    _decore(data, decoreList);
+                            }
                         }
                     }
                     else
                     {
                         EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
+                    }
+
+                    static void _decore(object obj, List<BindInfor> decoreList)
+                    {
+
+
+                        static void _decoreSingle(object obj, BindInfor bindInfor)
+                        {
+                            var member = obj.GetType().tiep;
+                            if (checkWherePredict(bindInfor.WherePredict, obj, member))
+                            {
+
+                            }
+                        }
                     }
                 }
 
@@ -209,7 +236,6 @@ namespace EasyDI
                     {
                         case BindInfor.EnumTreatWithInstanceMethod.UnSet:
                             goto case BindInfor.EnumTreatWithInstanceMethod.Transient;
-                            break;
                         case BindInfor.EnumTreatWithInstanceMethod.Singleton:
                             if (_checkFromInstanceCache(out r, memberInfoNeedInject))
                             {
@@ -307,7 +333,7 @@ namespace EasyDI
 
             }
 
-            bool checkWherePredict(Func<object, MemberInfo, bool> wherePredict, object instance, MemberInfo memberInfo)
+            static bool checkWherePredict(Func<object, MemberInfo, bool> wherePredict, object instance, MemberInfo memberInfo)
             {
                 if (wherePredict != null)
                 {
