@@ -158,7 +158,7 @@ namespace EasyDI
                             {
                                 List<BindInfor> decoreList = new List<BindInfor>();
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
-                                    _decore(data, decoreList);
+                                    _decore(data, member, decoreList);
                             }
                         }
                     }
@@ -167,17 +167,31 @@ namespace EasyDI
                         EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
                     }
 
-                    static void _decore(object obj, List<BindInfor> decoreList)
+                    static void _decore(object obj, MemberInfo member, List<BindInfor> decoreList)
                     {
 
-
-                        static void _decoreSingle(object obj, BindInfor bindInfor)
+                        foreach (BindInfor bind in decoreList)
                         {
-                            var member = obj.GetType().tiep;
+                            var t = _decoreSingle(obj, member, bind);
+
+                            if (t != null)//skip this bind if data = null
+                            {
+                                obj = t;
+                            }
+                        }
+
+                        //return new obj 
+                        static object _decoreSingle(object obj, MemberInfo member, BindInfor bindInfor)
+                        {
+                            var filedType = (member as FieldInfo);
                             if (checkWherePredict(bindInfor.WherePredict, obj, member))
                             {
-
+                                var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
+                                filedType.SetValue(obj, data);
+                                tiep
+                                return data;
                             }
+                            return null;
                         }
                     }
                 }
