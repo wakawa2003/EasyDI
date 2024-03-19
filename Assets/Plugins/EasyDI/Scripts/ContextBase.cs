@@ -193,7 +193,7 @@ namespace EasyDI
                             if (checkWherePredict(bindInfor.WherePredict, obj, member))
                             {
                                 var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                                fieldType.SetValue(obj, data);
+                                fieldType.SetValue(obj, data);tiep
                                 return data;
                             }
                             return null;
