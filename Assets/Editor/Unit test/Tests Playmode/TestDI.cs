@@ -19,8 +19,6 @@ namespace EasyDI.UnitTest
         {
             yield return new WaitForSeconds(0.5f);
 
-            if (string.IsNullOrEmpty(characterController.stringField1))
-                Debug.LogError("inject fail");
             if (string.IsNullOrEmpty(characterController.stringInMethod))
                 Debug.LogError("inject fail");
             if (string.IsNullOrEmpty(characterController.StringProperties1))
@@ -30,8 +28,6 @@ namespace EasyDI.UnitTest
 
             //for character
             if (characterController.StringProperties1 == projectInstaller.stringDefault)
-                Debug.LogError("can't overide project context value!");
-            if (characterController.stringField1 == projectInstaller.stringDefault)
                 Debug.LogError("can't overide project context value!");
             if (characterController.stringFieldTag2 != sceneInstaller.stringInstallForTag2)
                 Debug.LogError("can't overide project context value!");

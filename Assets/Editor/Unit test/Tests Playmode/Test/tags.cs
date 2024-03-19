@@ -10,5 +10,7 @@ namespace EasyDI.UnitTest
         public const string tag2 = nameof(tag2);
         public const string tag3 = nameof(tag3);
         public const string tagSingleton = nameof(tagSingleton);
+        public const string tagStringMethod1 = nameof(tagStringMethod1);
+        public const string tagStringMethod2 = nameof(tagStringMethod2);
     }
 }

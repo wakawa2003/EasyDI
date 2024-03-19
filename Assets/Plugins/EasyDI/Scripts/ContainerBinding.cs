@@ -17,12 +17,18 @@ namespace EasyDI
 
         public BindReturn<t> Bind<t>(string tag = "", bool isDecore = false)
         {
-            BindInfor bindInfor = new BindInfor();
+            Type typeT = typeof(t);
+            BindInfor bindInfor = new BindInfor(typeT);
             bindInfor.IsDecore = isDecore;
             var bindReturn = new BindReturn<t>(bindInfor);
-            var key = EasyDIUltilities.BuildKeyInject(typeof(t), tag);
+            var key = EasyDIUltilities.BuildKeyInject(typeT, tag);
             AddBinding(key, bindInfor, isDecore);
             return bindReturn;
+        }
+
+        public BindReturn<t> Decore<t>(string tag = "")
+        {
+            return Bind<t>(tag, true);
         }
 
         public void AddBinding(string injectKey, BindInfor bindInfor, bool isDecore)
@@ -58,10 +64,24 @@ namespace EasyDI
 
     public class BindInfor
     {
+        Type typeTarget { get; }
         /// <summary>
         /// Not Null when set in binding.
         /// </summary>
         object objectData;
+
+        public BindInfor(Type typeTarget)
+        {
+            this.typeTarget = typeTarget;
+        }
+        private BindInfor()
+        {
+
+        }
+        /// <summary>
+        /// Type of t parameter when set up.
+        /// </summary>
+        public Type TypeTarget => typeTarget;
         public bool IsDecore { get; set; } = false;
 
         public object ObjectData

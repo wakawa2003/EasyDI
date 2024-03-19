@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Codice.CM.SEIDInfo;
+using PlasticGui.Configuration.CloudEdition;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 namespace EasyDI
@@ -154,11 +157,13 @@ namespace EasyDI
                             var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
                             filedType.SetValue(obj, data);
 
+
+                            //decore handle
                             if (data != null)
                             {
                                 List<BindInfor> decoreList = new List<BindInfor>();
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
-                                    _decore(data, member, decoreList);
+                                    _decore(data, decoreList);
                             }
                         }
                     }
@@ -167,12 +172,12 @@ namespace EasyDI
                         EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
                     }
 
-                    static void _decore(object obj, MemberInfo member, List<BindInfor> decoreList)
+                    static void _decore(object obj, List<BindInfor> decoreList)
                     {
 
                         foreach (BindInfor bind in decoreList)
                         {
-                            var t = _decoreSingle(obj, member, bind);
+                            var t = _decoreSingle(obj, bind);
 
                             if (t != null)//skip this bind if data = null
                             {
@@ -181,18 +186,27 @@ namespace EasyDI
                         }
 
                         //return new obj 
-                        static object _decoreSingle(object obj, MemberInfo member, BindInfor bindInfor)
+                        static object _decoreSingle(object obj, BindInfor bindInfor)
                         {
-                            var filedType = (member as FieldInfo);
+                            var member = _getMemberIsDecoratorInObject(obj, bindInfor.TypeTarget);
+                            var fieldType = (member as FieldInfo);
                             if (checkWherePredict(bindInfor.WherePredict, obj, member))
                             {
                                 var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                                filedType.SetValue(obj, data);
-                                tiep
+                                fieldType.SetValue(obj, data);
                                 return data;
                             }
                             return null;
                         }
+                    }
+
+                    static MemberInfo _getMemberIsDecoratorInObject(object obj, Type typeDecore)
+                    {
+                        List<MemberInfo> memberInfoOut = new List<MemberInfo>();
+                        List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
+                        GetAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
+                        var decore = memberInfoOut.Find(_ => _.DeclaringType == typeDecore);
+                        return decore;
                     }
                 }
 
@@ -361,9 +375,17 @@ namespace EasyDI
             }
         }
 
+
+        /// <summary>
+        /// find all field, properties, method mark [Inject] attribute.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="memberInfoOut"></param>
+        /// <param name="injectAttributeOut"></param>
         public static void GetAllMemberNeedInject(Type type, List<MemberInfo> memberInfoOut, List<InjectAttribute> injectAttributeOut)
         {
             var cache = EasyDICache.Instance;
+            Dictionary<string, string> dictKey = new();
 
             //searching in cache
             if (cache.HasClass(type))
@@ -375,21 +397,87 @@ namespace EasyDI
             else//resolve if not found
             {
                 var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
+
+
+
                 cache.AddInjectClass(type, memberInfoOut, injectAttributeOut);
+
 
             }
 
             bool filer(MemberInfo m, object filterCriteria)
             {
-                var attList = m.GetCustomAttributes<InjectAttribute>(false);
+                var attList = m.GetCustomAttribute<InjectAttribute>(false);
 
-                if (attList.Count() > 0)
+                bool isValid = false;
+                if (attList != null)
                 {
-                    memberInfoOut.Add(m);
-                    injectAttributeOut.Add(attList.First());
+                 
+                    isValid = true;
+                    switch (m.MemberType)
+                    {
+                        case MemberTypes.All:
+                            break;
+                        case MemberTypes.Constructor:
+                            break;
+                        case MemberTypes.Custom:
+                            break;
+                        case MemberTypes.Event:
+                            break;
+                        case MemberTypes.Field:
+                            isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
+                            break;
+                        case MemberTypes.Method:
+                            var methodInfor = (m as MethodInfo);
+                            var @params = methodInfor.GetParameters();
+                            foreach (var item in @params)
+                            {
+                                if (!_checkValid(type, item.ParameterType.ToString(), dictKey, attList))
+                                {
+                                    isValid = false;
+                                }
+                            }
+                            break;
+                        case MemberTypes.NestedType:
+                            break;
+                        case MemberTypes.Property:
+                            isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
+                            break;
+                        case MemberTypes.TypeInfo:
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (isValid)
+                    {
+                        memberInfoOut.Add(m);
+                        injectAttributeOut.Add(attList);
+                    }
                 }
-                return attList.Count() > 0;
+                return isValid;
             }
+
+            static bool _checkValid(Type type, string typeMember, Dictionary<string, string> dictKey, InjectAttribute att)
+            {
+
+                //ensure only one member has tag Inject("tag") per one Type per one Object.
+                var key = type + att.Tag + typeMember;
+                if (dictKey.ContainsKey(key))
+                {
+
+                    Debug.LogError($"Contains more than one member \"{typeMember}\" has [Inject({att.Tag})] in class \"{type}\"");
+                    return false;
+                }
+                else
+                {
+                    dictKey.Add(key, typeMember);
+                }
+
+                return true;
+
+            }
+
 
         }
 

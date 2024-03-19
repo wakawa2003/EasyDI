@@ -14,7 +14,12 @@ namespace EasyDI.UnitTest
             ContainerBinding.Bind<string>().To<string>().FromInstance(stringDefault);
             ContainerBinding.Bind<int>().To<int>().FromInstance(intInMethod);
             ContainerBinding.Bind<string>(tags.tag1).To<string>().FromInstance(stringDefault);
+            ContainerBinding.Bind<string>(tags.tagStringMethod1).To<string>().FromInstance(stringDefault);
+            ContainerBinding.Bind<string>(tags.tagStringMethod2).To<string>().FromInstance(stringDefault);
+            ContainerBinding.Bind<int>(tags.tagStringMethod2).To<int>().FromInstance(characterInstaller.intInMethod);
             ContainerBinding.Bind<ICharacter>().To<characterController>().FromInstance(GetComponent<characterController>());
+ 
+        
         }
 
     }
