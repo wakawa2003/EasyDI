@@ -11,7 +11,12 @@ namespace EasyDI
     /// </summary>
     public class ContainerBinding
     {
+        public ContainerBinding(string name)
+        {
+            Name = name;
+        }
 
+        public string Name { get; private set; }
         public Dictionary<string, BindInfor> Dict_InjectName_And_BindInfor { get; private set; } = new Dictionary<string, BindInfor>();
         public Dictionary<string, List<BindInfor>> Dict_ListBindInforDecore { get; private set; } = new();
 
@@ -37,7 +42,7 @@ namespace EasyDI
             {
                 if (Dict_InjectName_And_BindInfor.ContainsKey(injectKey))
                 {
-                    EasyDILog.LogError($"Exist more than one \"{injectKey}\" binding in this container!");
+                    EasyDILog.LogError($"Exist more than one \"{injectKey}\" binding in \'{Name}\' container!");
                 }
                 else
                 {
@@ -76,7 +81,7 @@ namespace EasyDI
         }
         private BindInfor()
         {
-
+            var a = ID;//get ID
         }
         /// <summary>
         /// Type of t parameter when set up.
@@ -89,6 +94,17 @@ namespace EasyDI
             get => objectData; set => objectData = value;
         }
 
+
+        string id;
+        public string ID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(id))
+                    id = this.GetHashCode().ToString();
+                return id;
+            }
+        }
         public EGetInstanceMethod GetInstanceMethod { get; set; }
         public EnumTreatWithInstanceMethod TreatWithInstanceMethod { get; set; }
         /// <summary>

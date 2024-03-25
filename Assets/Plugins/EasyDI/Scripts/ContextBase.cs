@@ -1,10 +1,12 @@
 ﻿using Codice.CM.SEIDInfo;
 using PlasticGui.Configuration.CloudEdition;
+using PlasticPipe.PlasticProtocol.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace EasyDI
@@ -12,7 +14,7 @@ namespace EasyDI
     [DisallowMultipleComponent]
     public abstract class ContextBase : MonoBehaviour
     {
-        ContainerBinding containerBinding = new ContainerBinding();
+        ContainerBinding containerBinding;
         [SerializeField] List<IInstallerBase> installerList = new List<IInstallerBase>();
 
         public List<IInstallerBase> InstallerList { get => installerList; private set => installerList = value; }
@@ -27,7 +29,7 @@ namespace EasyDI
             {
                 //Debug.Log($"{gameObject.name} INITTTT");
                 //containerInjectMember = new ContainerInjectMember();
-                containerBinding = new ContainerBinding();
+                containerBinding = new ContainerBinding(name);
                 contextParent = GetParentContext();
                 GetAllBindInforFromInstallerList();
                 isInit = true;
@@ -46,7 +48,7 @@ namespace EasyDI
         private void GetAllBindInforFromInstallerList()
         {
             if (InstallerList.Count() == 0)
-                EasyDILog.LogWarning($"Context has name: {name} doesn't have InstallerList");
+                EasyDILog.LogWarning($"Context has name: \'{name}\' doesn't have InstallerList");
             foreach (var installer in InstallerList)
             {
                 installer.Init();
@@ -83,6 +85,8 @@ namespace EasyDI
 
             //neu
             Init();
+
+
             Dictionary<string, BindInfor> newBindInforFromChildContextAndThis = new Dictionary<string, BindInfor> { };
             Dictionary<string, List<BindInfor>> newBindInforDecoreFromChildContext = new();
             _combineConditions(ref newBindInforFromChildContextAndThis, bindInfor_FromChildContext, containerBinding.Dict_InjectName_And_BindInfor);
@@ -163,7 +167,13 @@ namespace EasyDI
                             {
                                 List<BindInfor> decoreList = new List<BindInfor>();
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
-                                    _decore(data, decoreList);
+                                {
+                                    _decore(data, decoreList, (obj, member, data) =>
+                                    {
+                                        var fieldType = (member as FieldInfo);
+                                        filedType.SetValue(obj, data);
+                                    });
+                                }
                             }
                         }
                     }
@@ -172,32 +182,45 @@ namespace EasyDI
                         EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
                     }
 
-                    static void _decore(object obj, List<BindInfor> decoreList)
+                }
+
+                static void _decore(object obj, List<BindInfor> decoreList, Action<object, MemberInfo, object> setdataPredict)
+                {
+                    int i = 0;
+                    foreach (BindInfor bind in decoreList)
                     {
-
-                        foreach (BindInfor bind in decoreList)
+                        Debug.Log($"decore List[{i}]: {bind.ID}");
+                        i++;
+                        if (obj != null)
                         {
-                            var t = _decoreSingle(obj, bind);
-
+                            var t = _decoreSingle(obj, bind, setdataPredict);
                             if (t != null)//skip this bind if data = null
                             {
                                 obj = t;
                             }
-                        }
 
-                        //return new obj 
-                        static object _decoreSingle(object obj, BindInfor bindInfor)
+                        }
+                    }
+
+                    //return new obj 
+                    static object _decoreSingle(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
+                    {
+                        Debug.Log($"decore obj: {obj.GetHashCode()}");
+                        var member = _getMemberIsDecoratorInObject(obj, bindInfor.TypeTarget);
+                        if (member != null)
                         {
-                            var member = _getMemberIsDecoratorInObject(obj, bindInfor.TypeTarget);
-                            var fieldType = (member as FieldInfo);
+                            //var fieldType = (member as FieldInfo);
                             if (checkWherePredict(bindInfor.WherePredict, obj, member))
                             {
                                 var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                                fieldType.SetValue(obj, data);tiep
+                                //Debug.Log($"data obj: {data.GetHashCode()}");
+                                onSetdataPredict?.Invoke(obj, member, data);
+
                                 return data;
                             }
-                            return null;
                         }
+                        Debug.Log($"nulllll");
+                        return null;
                     }
 
                     static MemberInfo _getMemberIsDecoratorInObject(object obj, Type typeDecore)
@@ -205,7 +228,15 @@ namespace EasyDI
                         List<MemberInfo> memberInfoOut = new List<MemberInfo>();
                         List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
                         GetAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
-                        var decore = memberInfoOut.Find(_ => _.DeclaringType == typeDecore);
+                        Debug.Log($"type111: {obj.GetType()}");
+                        foreach (var item in memberInfoOut)
+                        {
+                            Debug.Log($"member: {item.GetUnderlyingType().Name}");
+
+                        }
+                        Debug.Log($"typeDecore: {typeDecore.Name}");
+                        var decore = memberInfoOut.Find(_ => _.GetUnderlyingType() == typeDecore);
+                        Debug.Log($"");
                         return decore;
                     }
                 }
@@ -248,6 +279,21 @@ namespace EasyDI
                         {
                             var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
                             proType.SetValue(obj, data);
+
+
+                            //decore handle
+                            if (data != null)
+                            {
+                                List<BindInfor> decoreList = new List<BindInfor>();
+                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
+                                {
+                                    _decore(data, decoreList, (obj, member, data) =>
+                                    {
+                                        var fieldType = (member as PropertyInfo);
+                                        fieldType.SetValue(obj, data);
+                                    });
+                                }
+                            }
                         }
                     }
                     else
@@ -347,18 +393,49 @@ namespace EasyDI
 
             static void _combineConditionsDecore(ref Dictionary<string, List<BindInfor>> outDict, Dictionary<string, List<BindInfor>> dict1, Dictionary<string, List<BindInfor>> dict2)
             {
+
+                //Debug.Log($"{nameof(dict1)}:");
+                //logDict(dict1);
+                //Debug.Log($"{nameof(dict2)}:");
+                //logDict(dict2);
+                //Debug.Log($"end");
                 //can phai tao dict moi
                 foreach (var a in dict1)
                 {
                     if (!outDict.ContainsKey(a.Key))
-                        outDict.Add(a.Key, a.Value);
+                        outDict.Add(a.Key, a.Value.ToList());
                 }
                 foreach (var a in dict2)
                 {
-                    if (!outDict.ContainsKey(a.Key))
+                    //if (!outDict.ContainsKey(a.Key))
+                    //    outDict.Add(a.Key, a.Value.ToList());
+                    if (outDict.ContainsKey(a.Key))
+                    {
+                        foreach (var newValue in dict2[a.Key])
+                        {
+                            if (!outDict[a.Key].Contains(newValue))
+                                outDict[a.Key].Add(newValue);
+
+                        }
+                    }
+                    else
                         outDict.Add(a.Key, a.Value.ToList());
                 }
 
+
+                void logDict(Dictionary<string, List<BindInfor>> dict1)
+                {
+                    foreach (var item in dict1)
+                    {
+
+                        Debug.Log($"key: \'{item}\'");
+                        foreach (var v in item.Value)
+                        {
+
+                            Debug.Log($"---value: {v.ID}");
+                        }
+                    }
+                }
             }
 
             static bool checkWherePredict(Func<object, MemberInfo, bool> wherePredict, object instance, MemberInfo memberInfo)
@@ -387,23 +464,23 @@ namespace EasyDI
             var cache = EasyDICache.Instance;
             Dictionary<string, string> dictKey = new();
 
+            tiep (cache tra ve sai cho decore)
             //searching in cache
-            if (cache.HasClass(type))
-            {
-                var t = cache.GetContainerTypeInject(type);
-                memberInfoOut = t.MemberList;
-                injectAttributeOut = t.InjectAttributeList;
-            }
-            else//resolve if not found
-            {
+            //if (cache.HasClass(type))
+            //{
+            //    var t = cache.GetContainerTypeInject(type);
+            //    memberInfoOut = t.MemberList;
+            //    injectAttributeOut = t.InjectAttributeList;
+            //}
+            //else//resolve if not found
+            //{
                 var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
-
 
 
                 cache.AddInjectClass(type, memberInfoOut, injectAttributeOut);
 
 
-            }
+            //}
 
             bool filer(MemberInfo m, object filterCriteria)
             {
@@ -412,7 +489,7 @@ namespace EasyDI
                 bool isValid = false;
                 if (attList != null)
                 {
-                 
+
                     isValid = true;
                     switch (m.MemberType)
                     {
@@ -466,7 +543,7 @@ namespace EasyDI
                 if (dictKey.ContainsKey(key))
                 {
 
-                    Debug.LogError($"Contains more than one member \"{typeMember}\" has [Inject({att.Tag})] in class \"{type}\"");
+                    Debug.LogError($"Contains more than one member \"{typeMember}\" has [Inject(\'{att.Tag}\')] in class \"{type}\"");
                     return false;
                 }
                 else

@@ -6,7 +6,7 @@ namespace EasyDI
 {
     public abstract class MonoInstaller : MonoBehaviour, IInstallerBase
     {
-        public ContainerBinding ContainerBinding { get; set; } = new ContainerBinding();
+        public ContainerBinding ContainerBinding { get; set; } = new ContainerBinding("MonoInstaller");
         public bool isInit { get; set; } = false;
 
         public string InstallerName => gameObject.name;

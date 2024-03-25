@@ -7,8 +7,8 @@ namespace EasyDI.UnitTest
     public class characterController : MonoBehaviour, ICharacter, iSpeed
     {
         [Inject] public string StringProperties1 { get; set; }
-        public iSpeed iSpeedDecore { get; set; }
-        public float Speed { get; set; }
+        [Inject] public iSpeed iSpeedDecore { get; set; }
+        public float Speed { get => iSpeedDecore.Speed + 1; set { } }
 
         [Inject] public classIsSingleton classIsSingleton;
         [Inject(tags.tag1)] public string stringFieldTag1;
