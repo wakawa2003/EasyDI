@@ -46,12 +46,11 @@ namespace EasyDI.UnitTest
                 Debug.LogError("can't overide project context value!");
 
             yield return new WaitForSeconds(0.5f);
-            //Debug.Log($"speed: {characterController.Speed}");
+            Debug.Log($"character speed after decore: {characterController.Speed}");
             //check singleton inject
             if (characterController.classIsSingleton != gunController.classIsSingleton)
                 Debug.LogError("singleton inject fail!");
 
-            yield return new WaitForSeconds(3);
             yield return null;
         }
 

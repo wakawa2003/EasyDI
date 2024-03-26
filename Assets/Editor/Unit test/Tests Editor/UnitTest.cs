@@ -18,7 +18,7 @@ namespace EasyDI
             List<InjectAttribute> injectAttributeOut = new List<InjectAttribute>();
             for (int i = 0; i < 100; i++)
             {
-                ContextBase.GetAllMemberNeedInject(new Test().GetType(), memberOut, injectAttributeOut);
+                ContextBase.GetAllMemberNeedInject(new Test().GetType(), ref memberOut, ref injectAttributeOut);
             }
             var end = DateTime.Now;
             Debug.Log($"time execute: {end.Subtract(start).TotalMilliseconds}");

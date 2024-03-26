@@ -103,7 +103,7 @@ namespace EasyDI
                 //inject cho obj ngoai tru nhung infor child
                 List<MemberInfo> memberInfoOut = new List<MemberInfo>();
                 List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
-                GetAllMemberNeedInject(objectNeedInject.GetType(), memberInfoOut, injectAttributeOut);
+                GetAllMemberNeedInject(objectNeedInject.GetType(), ref memberInfoOut, ref injectAttributeOut);
                 for (int i = 0; i < memberInfoOut.Count; i++)
                 {
                     var memberInfor = memberInfoOut[i];
@@ -148,45 +148,11 @@ namespace EasyDI
                         );
                 }
 
-                void _setForField(object obj, MemberInfo member, InjectAttribute injectAttribute)
-                {
-                    var filedType = (member as FieldInfo);
-                    BindInfor bindInfor = null;
-                    var key = EasyDIUltilities.BuildKeyInject(filedType.FieldType, injectAttribute.Tag);
-
-                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
-                    {
-                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
-                        {
-                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                            filedType.SetValue(obj, data);
-
-
-                            //decore handle
-                            if (data != null)
-                            {
-                                List<BindInfor> decoreList = new List<BindInfor>();
-                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
-                                {
-                                    _decore(data, decoreList, (obj, member, data) =>
-                                    {
-                                        var fieldType = (member as FieldInfo);
-                                        filedType.SetValue(obj, data);
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
-                    }
-
-                }
-
-                static void _decore(object obj, List<BindInfor> decoreList, Action<object, MemberInfo, object> setdataPredict)
+                //return lastest decore object
+                static object _decore(object obj, List<BindInfor> decoreList, Action<object, MemberInfo, object> setdataPredict)
                 {
                     int i = 0;
+
                     foreach (BindInfor bind in decoreList)
                     {
                         Debug.Log($"decore List[{i}]: {bind.ID}");
@@ -201,6 +167,7 @@ namespace EasyDI
 
                         }
                     }
+                    return obj;
 
                     //return new obj 
                     static object _decoreSingle(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
@@ -227,19 +194,99 @@ namespace EasyDI
                     {
                         List<MemberInfo> memberInfoOut = new List<MemberInfo>();
                         List<InjectAttribute> injectAttributeOut = new List<InjectAttribute> { };
-                        GetAllMemberNeedInject(obj.GetType(), memberInfoOut, injectAttributeOut);
-                        Debug.Log($"type111: {obj.GetType()}");
-                        foreach (var item in memberInfoOut)
-                        {
-                            Debug.Log($"member: {item.GetUnderlyingType().Name}");
+                        //Debug.Log($"type111: {obj.GetType()}");
+                        GetAllMemberNeedInject(obj.GetType(), ref memberInfoOut, ref injectAttributeOut);
+                        //Debug.Log($"found members: {memberInfoOut.Count}");
+                        //foreach (var item in memberInfoOut)
+                        //{
+                        //    Debug.Log($"member type: {item.GetUnderlyingType().Name}");
 
-                        }
-                        Debug.Log($"typeDecore: {typeDecore.Name}");
-                        var decore = memberInfoOut.Find(_ => _.GetUnderlyingType() == typeDecore);
-                        Debug.Log($"");
+                        //}
+                        //Debug.Log($"typeDecore: {typeDecore.Name}");
+                        var decore = memberInfoOut.Find(_ => _.GetUnderlyingType().Name == typeDecore.Name);
+                        //if (decore == null)
+                        //    Debug.Log($"cant find");
                         return decore;
                     }
                 }
+
+                void _setForField(object obj, MemberInfo member, InjectAttribute injectAttribute)
+                {
+                    var filedType = (member as FieldInfo);
+                    BindInfor bindInfor = null;
+                    var key = EasyDIUltilities.BuildKeyInject(filedType.FieldType, injectAttribute.Tag);
+
+                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
+                    {
+                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
+                        {
+                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
+                            //set value
+                            filedType.SetValue(obj, data);
+
+                            // start decore handle
+                            if (data != null)
+                            {
+                                List<BindInfor> decoreList = new List<BindInfor>();
+                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
+                                {
+                                    _decore(data, decoreList, (obj, member, data) =>
+                                     {
+                                         var fieldType = (member as FieldInfo);
+                                         fieldType.SetValue(obj, data);
+                                     });
+                                }
+                            }
+                            //end decore handle
+
+
+
+                        }
+                    }
+                    else
+                    {
+                        EasyDILog.LogError($"Can't find binding {filedType.FieldType.Name} for field: {filedType.Name}!!");
+                    }
+
+                }
+
+                void _setForProperties(object obj, MemberInfo member, InjectAttribute injectAttribute)
+                {
+                    var proType = ((PropertyInfo)member);
+                    BindInfor bindInfor = null;
+                    var key = EasyDIUltilities.BuildKeyInject(proType.PropertyType, injectAttribute.Tag);
+                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
+                    {
+                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
+                        {
+                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
+                            proType.SetValue(obj, data);
+
+                            // start decore handle
+                            if (data != null)
+                            {
+                                List<BindInfor> decoreList = new List<BindInfor>();
+                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
+                                {
+                                    _decore(data, decoreList, (obj, member, data) =>
+                                   {
+                                       var fieldType = (member as PropertyInfo);
+                                       fieldType.SetValue(obj, data);
+                                   });
+                                }
+                            }
+                            //end decore handle
+
+
+
+                        }
+                    }
+                    else
+                    {
+                        EasyDILog.LogError($"Can't find binding {proType.PropertyType.Name} for properties: {proType.Name}!!");
+                    }
+                }
+
 
                 void _setForMethod(object obj, MemberInfo member, InjectAttribute injectAttribute)
                 {
@@ -267,39 +314,6 @@ namespace EasyDI
                         }
                     }
                     methodInfor.Invoke(obj, args);
-                }
-                void _setForProperties(object obj, MemberInfo member, InjectAttribute injectAttribute)
-                {
-                    var proType = ((PropertyInfo)member);
-                    BindInfor bindInfor = null;
-                    var key = EasyDIUltilities.BuildKeyInject(proType.PropertyType, injectAttribute.Tag);
-                    if (_tryGetConditionFromThisAndChild(key, out bindInfor))
-                    {
-                        if (checkWherePredict(bindInfor.WherePredict, objectNeedInject, member))
-                        {
-                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                            proType.SetValue(obj, data);
-
-
-                            //decore handle
-                            if (data != null)
-                            {
-                                List<BindInfor> decoreList = new List<BindInfor>();
-                                if (_tryGetDecoreFromThisAndChild(key, out decoreList))
-                                {
-                                    _decore(data, decoreList, (obj, member, data) =>
-                                    {
-                                        var fieldType = (member as PropertyInfo);
-                                        fieldType.SetValue(obj, data);
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        EasyDILog.LogError($"Can't find binding {proType.PropertyType.Name} for properties: {proType.Name}!!");
-                    }
                 }
 
 
@@ -459,81 +473,95 @@ namespace EasyDI
         /// <param name="type"></param>
         /// <param name="memberInfoOut"></param>
         /// <param name="injectAttributeOut"></param>
-        public static void GetAllMemberNeedInject(Type type, List<MemberInfo> memberInfoOut, List<InjectAttribute> injectAttributeOut)
+        public static void GetAllMemberNeedInject(Type type, ref List<MemberInfo> memberInfoOut, ref List<InjectAttribute> injectAttributeOut)
         {
             var cache = EasyDICache.Instance;
-            Dictionary<string, string> dictKey = new();
 
-            tiep (cache tra ve sai cho decore)
+            //tiep (cache tra ve sai cho decore)
             //searching in cache
-            //if (cache.HasClass(type))
-            //{
-            //    var t = cache.GetContainerTypeInject(type);
-            //    memberInfoOut = t.MemberList;
-            //    injectAttributeOut = t.InjectAttributeList;
-            //}
-            //else//resolve if not found
-            //{
-                var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
-
-
-                cache.AddInjectClass(type, memberInfoOut, injectAttributeOut);
-
-
-            //}
-
-            bool filer(MemberInfo m, object filterCriteria)
+            if (cache.HasClass(type))
             {
-                var attList = m.GetCustomAttribute<InjectAttribute>(false);
+                var t = cache.GetContainerTypeInject(type);
+                memberInfoOut = t.MemberList;
+                injectAttributeOut = t.InjectAttributeList;
 
-                bool isValid = false;
-                if (attList != null)
+                Debug.LogWarning($"get cache type: {t.Type.Name}");
+                foreach (MemberInfo memberInfo in memberInfoOut)
                 {
 
-                    isValid = true;
-                    switch (m.MemberType)
-                    {
-                        case MemberTypes.All:
-                            break;
-                        case MemberTypes.Constructor:
-                            break;
-                        case MemberTypes.Custom:
-                            break;
-                        case MemberTypes.Event:
-                            break;
-                        case MemberTypes.Field:
-                            isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
-                            break;
-                        case MemberTypes.Method:
-                            var methodInfor = (m as MethodInfo);
-                            var @params = methodInfor.GetParameters();
-                            foreach (var item in @params)
-                            {
-                                if (!_checkValid(type, item.ParameterType.ToString(), dictKey, attList))
-                                {
-                                    isValid = false;
-                                }
-                            }
-                            break;
-                        case MemberTypes.NestedType:
-                            break;
-                        case MemberTypes.Property:
-                            isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
-                            break;
-                        case MemberTypes.TypeInfo:
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (isValid)
-                    {
-                        memberInfoOut.Add(m);
-                        injectAttributeOut.Add(attList);
-                    }
+                    Debug.LogWarning($"----member name: {memberInfo.Name}");
+                    Debug.LogWarning($"----member type: {memberInfo.GetUnderlyingType().Name}");
                 }
-                return isValid;
             }
+            else//resolve if not found
+            {
+                Dictionary<string, string> dictKey = new();
+                List<MemberInfo> memberFoundList = new();
+                List<InjectAttribute> injectAttributeFOundList = new();
+
+                var list = type.FindMembers(MemberTypes.Field | MemberTypes.Method | MemberTypes.Property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, filer, "ReferenceEquals");
+
+                if (memberFoundList.Count > 0)
+                    if (injectAttributeFOundList.Count > 0)
+                    {
+                        cache.AddInjectClass(type, memberFoundList, injectAttributeFOundList);
+                        memberInfoOut = memberFoundList;
+                        injectAttributeOut = injectAttributeFOundList;
+                    }
+                bool filer(MemberInfo m, object filterCriteria)
+                {
+                    var attList = m.GetCustomAttribute<InjectAttribute>(false);
+
+                    bool isValid = false;
+                    if (attList != null)
+                    {
+
+                        isValid = true;
+                        switch (m.MemberType)
+                        {
+                            case MemberTypes.All:
+                                break;
+                            case MemberTypes.Constructor:
+                                break;
+                            case MemberTypes.Custom:
+                                break;
+                            case MemberTypes.Event:
+                                break;
+                            case MemberTypes.Field:
+                                isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
+                                break;
+                            case MemberTypes.Method:
+                                var methodInfor = (m as MethodInfo);
+                                var @params = methodInfor.GetParameters();
+                                foreach (var item in @params)
+                                {
+                                    if (!_checkValid(type, item.ParameterType.ToString(), dictKey, attList))
+                                    {
+                                        isValid = false;
+                                    }
+                                }
+                                break;
+                            case MemberTypes.NestedType:
+                                break;
+                            case MemberTypes.Property:
+                                isValid = _checkValid(type, m.GetUnderlyingType().ToString(), dictKey, attList);
+                                break;
+                            case MemberTypes.TypeInfo:
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (isValid)
+                        {
+                            memberFoundList.Add(m);
+                            injectAttributeFOundList.Add(attList);
+                        }
+                    }
+                    return isValid;
+                }
+            }
+
 
             static bool _checkValid(Type type, string typeMember, Dictionary<string, string> dictKey, InjectAttribute att)
             {
