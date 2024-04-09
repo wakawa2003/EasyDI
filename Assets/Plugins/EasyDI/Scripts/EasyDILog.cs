@@ -11,7 +11,7 @@ namespace EasyDI
             Debug.LogError(message);
         } 
         public static void Log(string message)
-        {
+        { 
             Debug.Log(message);
         }
         public static void LogWarning(string message)
