@@ -51,6 +51,9 @@ namespace EasyDI.UnitTest
             if (characterController.classIsSingleton != gunController.classIsSingleton)
                 Debug.LogError("singleton inject fail!");
 
+            if (sceneInstaller.buffSpeedValue + characterInstaller.buffSpeedValue1 * 2 + characterInstaller.buffSpeedValue2 != characterController.Speed)
+                Debug.LogError("decorator fail!!!");
+
             yield return null;
         }
 
@@ -101,16 +104,16 @@ namespace EasyDI.UnitTest
             IEnumerator setupGameObject()
             {
                 Debug.Log($"setup GO");
-                var obj = new GameObject("GO Test 1");
-                obj.gameObject.AddComponent<characterInstaller>();
-                TestDI.characterController = obj.gameObject.AddComponent<characterController>();
-                obj.gameObject.AddComponent<GameObjectContext>();
+                var character = new GameObject("character Test 1");
+                character.gameObject.AddComponent<characterInstaller>();
+                TestDI.characterController = character.gameObject.AddComponent<characterController>();
+                character.gameObject.AddComponent<GameObjectContext>();
 
 
 
                 Debug.Log($"setup GUn");
                 var gun = new GameObject("Gun Test 1");
-                gun.transform.SetParent(obj.transform);
+                gun.transform.SetParent(character.transform);
                 gun.gameObject.AddComponent<gunInstaller>();
                 TestDI.gunController = gun.gameObject.AddComponent<gunController>();
                 gun.gameObject.AddComponent<GameObjectContext>();

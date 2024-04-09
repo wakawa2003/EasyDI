@@ -155,7 +155,7 @@ namespace EasyDI
 
                     foreach (BindInfor bind in decoreList)
                     {
-                        Debug.Log($"decore List[{i}]: {bind.ID}");
+                        //Debug.Log($"decore List[{i}]: {bind.ID}");
                         i++;
                         if (obj != null)
                         {
@@ -172,7 +172,7 @@ namespace EasyDI
                     //return new obj 
                     static object _decoreSingle(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
                     {
-                        Debug.Log($"decore obj: {obj.GetHashCode()}");
+                        //Debug.Log($"decore obj: {obj.GetHashCode()}");
                         var member = _getMemberIsDecoratorInObject(obj, bindInfor.TypeTarget);
                         if (member != null)
                         {
@@ -186,7 +186,7 @@ namespace EasyDI
                                 return data;
                             }
                         }
-                        Debug.Log($"nulllll");
+                        //Debug.Log($"nulllll");
                         return null;
                     }
 
@@ -228,6 +228,7 @@ namespace EasyDI
                             if (data != null)
                             {
                                 List<BindInfor> decoreList = new List<BindInfor>();
+
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
                                 {
                                     _decore(data, decoreList, (obj, member, data) =>
@@ -407,12 +408,11 @@ namespace EasyDI
 
             static void _combineConditionsDecore(ref Dictionary<string, List<BindInfor>> outDict, Dictionary<string, List<BindInfor>> dict1, Dictionary<string, List<BindInfor>> dict2)
             {
-
+                //Debug.Log($"start");
                 //Debug.Log($"{nameof(dict1)}:");
                 //logDict(dict1);
                 //Debug.Log($"{nameof(dict2)}:");
                 //logDict(dict2);
-                //Debug.Log($"end");
                 //can phai tao dict moi
                 foreach (var a in dict1)
                 {
@@ -435,7 +435,9 @@ namespace EasyDI
                     else
                         outDict.Add(a.Key, a.Value.ToList());
                 }
-
+                //Debug.Log($"{nameof(outDict)}:");
+                //logDict(outDict);
+                //Debug.Log($"end");
 
                 void logDict(Dictionary<string, List<BindInfor>> dict1)
                 {
@@ -477,7 +479,6 @@ namespace EasyDI
         {
             var cache = EasyDICache.Instance;
 
-            //tiep (cache tra ve sai cho decore)
             //searching in cache
             if (cache.HasClass(type))
             {

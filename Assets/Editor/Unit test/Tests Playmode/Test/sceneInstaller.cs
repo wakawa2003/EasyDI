@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -10,6 +11,7 @@ namespace EasyDI.UnitTest
         public static string stringInstallForTag2 = "scene instaler string tag2";
         public static string idSingleton;
         public static string stringTagForTagSingleton = "value for string singleton";
+        public static float buffSpeedValue = 3;
 
         public override void InstallBinding()
         {
@@ -35,7 +37,19 @@ namespace EasyDI.UnitTest
                 idSingleton = GUID.Generate().ToString();
                 return new classIsSingleton(idSingleton);
             }).AsSingleton();
-
+            ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().FromInstance(new buffSpeedInScene()).AsTransient();
+        }
+        public class buffSpeedInScene : iSpeed
+        {
+            [Inject] public iSpeed iSpeedDecore { get; set; }
+            public float Speed
+            {
+                get
+                {
+                    return iSpeedDecore == null ? sceneInstaller.buffSpeedValue : iSpeedDecore.Speed + sceneInstaller.buffSpeedValue;
+                }
+                set { }
+            }
         }
 
 

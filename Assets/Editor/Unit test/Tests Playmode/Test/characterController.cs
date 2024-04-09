@@ -8,7 +8,7 @@ namespace EasyDI.UnitTest
     {
         [Inject] public string StringProperties1 { get; set; }
         [Inject] public iSpeed iSpeedDecore { get; set; }
-        public float Speed { get => iSpeedDecore.Speed; set { } }
+        public float Speed { get => iSpeedDecore == null ? 0 : iSpeedDecore.Speed; set { } }
 
         [Inject] public classIsSingleton classIsSingleton;
         [Inject(tags.tag1)] public string stringFieldTag1;

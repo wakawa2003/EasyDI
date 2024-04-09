@@ -4,18 +4,10 @@ using UnityEngine;
 
 namespace EasyDI.UnitTest
 {
-    public class gunInstaller : MonoBehaviour
+    public class gunInstaller : MonoInstaller
     {
-        // Start is called before the first frame update
-        void Start()
+        public override void InstallBinding()
         {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
     }
 }
