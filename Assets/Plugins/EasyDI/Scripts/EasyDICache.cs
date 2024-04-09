@@ -34,12 +34,12 @@ namespace EasyDI
         {
             if (!dictInject.ContainsKey(type))
             {
-                Debug.LogWarning($"add type: {type.Name}");
-                foreach (MemberInfo memberInfo in memberInfoList)
-                {
+                //Debug.LogWarning($"add type: {type.Name}");
+                //foreach (MemberInfo memberInfo in memberInfoList)
+                //{
 
-                    Debug.LogWarning($"----member: {memberInfo.Name}");
-                }
+                //    Debug.LogWarning($"----member: {memberInfo.Name}");
+                //}
                 dictInject.Add(type, new ContainerTypeInject(type, memberInfoList, injectAttributeList));
             }
 

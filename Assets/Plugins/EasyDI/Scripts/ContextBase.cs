@@ -486,13 +486,13 @@ namespace EasyDI
                 memberInfoOut = t.MemberList;
                 injectAttributeOut = t.InjectAttributeList;
 
-                Debug.LogWarning($"get cache type: {t.Type.Name}");
-                foreach (MemberInfo memberInfo in memberInfoOut)
-                {
+                //Debug.LogWarning($"get cache type: {t.Type.Name}");
+                //foreach (MemberInfo memberInfo in memberInfoOut)
+                //{
 
-                    Debug.LogWarning($"----member name: {memberInfo.Name}");
-                    Debug.LogWarning($"----member type: {memberInfo.GetUnderlyingType().Name}");
-                }
+                //    Debug.LogWarning($"----member name: {memberInfo.Name}");
+                //    Debug.LogWarning($"----member type: {memberInfo.GetUnderlyingType().Name}");
+                //}
             }
             else//resolve if not found
             {
