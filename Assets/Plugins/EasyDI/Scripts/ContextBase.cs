@@ -1,12 +1,8 @@
-﻿using Codice.CM.SEIDInfo;
-using PlasticGui.Configuration.CloudEdition;
-using PlasticPipe.PlasticProtocol.Messages;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace EasyDI
@@ -439,19 +435,19 @@ namespace EasyDI
                 //logDict(outDict);
                 //Debug.Log($"end");
 
-                void logDict(Dictionary<string, List<BindInfor>> dict1)
-                {
-                    foreach (var item in dict1)
-                    {
+                //void logDict(Dictionary<string, List<BindInfor>> dict1)
+                //{
+                //    foreach (var item in dict1)
+                //    {
 
-                        Debug.Log($"key: \'{item}\'");
-                        foreach (var v in item.Value)
-                        {
+                //        Debug.Log($"key: \'{item}\'");
+                //        foreach (var v in item.Value)
+                //        {
 
-                            Debug.Log($"---value: {v.ID}");
-                        }
-                    }
-                }
+                //            Debug.Log($"---value: {v.ID}");
+                //        }
+                //    }
+                //}
             }
 
             static bool checkWherePredict(Func<object, MemberInfo, bool> wherePredict, object instance, MemberInfo memberInfo)

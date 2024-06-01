@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ namespace EasyDI
             EditorGUILayout.PropertyField(list);
             //myScript.MonoInstaller = (List<MonoInstaller>)list.exposedReferenceValue;
             serializedObject.ApplyModifiedProperties();
-         
+
         }
     }
 }
+#endif
