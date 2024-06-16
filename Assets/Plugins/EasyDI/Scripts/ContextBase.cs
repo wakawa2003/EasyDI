@@ -155,10 +155,21 @@ namespace EasyDI
                         i++;
                         if (obj != null)
                         {
+
                             var t = _decoreSingle(obj, bind, setdataPredict);
+
                             if (t != null)//skip this bind if data = null
                             {
+                                if (isIEasyDIDecorator(obj))
+                                {
+                                    tempIDecore temp;
+                                    var prevProperties = t.GetType().GetProperty(nameof(temp.PrevDecore));
+                                    Debug.Log($"prev pro: {prevProperties}");
+                                    prevProperties.SetValue(t, obj);
+                                }
+
                                 obj = t;
+
                             }
 
                         }
@@ -184,6 +195,38 @@ namespace EasyDI
                         }
                         //Debug.Log($"nulllll");
                         return null;
+
+                    }
+
+                    static object _decoreSingleWithIDecore(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
+                    {
+                        tempIDecore temp;
+                        var prevProperties = obj.GetType().GetProperty(nameof(temp.PrevDecore));
+                        Debug.Log($"prev pro: {prevProperties}");
+                        var member = prevProperties as MemberInfo;
+                        if (checkWherePredict(bindInfor.WherePredict, obj, member))
+                        {
+                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
+                            //Debug.Log($"data obj: {data.GetHashCode()}");
+                            onSetdataPredict?.Invoke(obj, member, data);
+
+                            return data;
+                        }
+                        return null;
+
+                    }
+
+                    static bool isIEasyDIDecorator(object obj)
+                    {
+                        var interfacessFound = obj.GetType().FindInterfaces(MyInterfaceFilter, typeof(IEasyDIDecore<>).Name);
+                        return (interfacessFound.Length > 0);
+                    }
+                    static bool MyInterfaceFilter(Type typeObj, System.Object criteriaObj)
+                    {
+                        if (typeObj.ToString().Contains(criteriaObj.ToString()))
+                            return true;
+                        else
+                            return false;
                     }
 
                     static MemberInfo _getMemberIsDecoratorInObject(object obj, Type typeDecore)
@@ -231,6 +274,7 @@ namespace EasyDI
                                      {
                                          var fieldType = (member as FieldInfo);
                                          fieldType.SetValue(obj, data);
+
                                      });
                                 }
                             }
@@ -269,6 +313,7 @@ namespace EasyDI
                                    {
                                        var fieldType = (member as PropertyInfo);
                                        fieldType.SetValue(obj, data);
+
                                    });
                                 }
                             }
@@ -585,5 +630,6 @@ namespace EasyDI
 
 
     }
+    interface tempIDecore : IEasyDIDecore<tempIDecore> { }
 }
 

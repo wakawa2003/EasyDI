@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace EasyDI.UnitTest
 {
-    public interface iSpeed
+    public interface iSpeed : IEasyDIDecore<iSpeed>
     {
-        [Inject] iSpeed iSpeedDecore { get; set; }
         public float Speed { get; set; }
     }
 }

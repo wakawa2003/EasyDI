@@ -41,15 +41,17 @@ namespace EasyDI.UnitTest
         }
         public class buffSpeedInScene : iSpeed
         {
-            [Inject] public iSpeed iSpeedDecore { get; set; }
+            [Inject] public iSpeed Decore { get; set; }
+            public iSpeed PrevDecore { get; set; }
             public float Speed
             {
                 get
                 {
-                    return iSpeedDecore == null ? sceneInstaller.buffSpeedValue : iSpeedDecore.Speed + sceneInstaller.buffSpeedValue;
+                    return Decore == null ? sceneInstaller.buffSpeedValue : Decore.Speed + sceneInstaller.buffSpeedValue;
                 }
                 set { }
             }
+
         }
 
 
