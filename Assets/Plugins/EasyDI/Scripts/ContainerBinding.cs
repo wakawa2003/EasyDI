@@ -20,20 +20,26 @@ namespace EasyDI
         public Dictionary<string, BindInfor> Dict_InjectName_And_BindInfor { get; private set; } = new Dictionary<string, BindInfor>();
         public Dictionary<string, List<BindInfor>> Dict_ListBindInforDecore { get; private set; } = new();
 
-        public BindReturn<t> Bind<t>(string tag = "", bool isDecore = false)
+        public BindReturn<t> Bind<t>(string tag = "")
+        {
+            BindReturn<t> bindReturn = CreatNewBind<t>(tag, false);
+            return bindReturn;
+        }
+
+        private BindReturn<t> CreatNewBind<t>(string tag, bool isDecore)
         {
             Type typeT = typeof(t);
             BindInfor bindInfor = new BindInfor(typeT);
             bindInfor.IsDecore = isDecore;
             var bindReturn = new BindReturn<t>(bindInfor);
             var key = EasyDIUltilities.BuildKeyInject(typeT, tag);
-            AddBinding(key, bindInfor, isDecore);
+            AddBinding(key, bindInfor, bindInfor.IsDecore);
             return bindReturn;
         }
 
-        public BindReturn<t> Decore<t>(string tag = "")
+        public BindReturn<t> Decore<t>(string tag = "") where t : IEasyDIDecore<t>
         {
-            return Bind<t>(tag, true);
+            return CreatNewBind<t>(tag, true);
         }
 
         public void AddBinding(string injectKey, BindInfor bindInfor, bool isDecore)

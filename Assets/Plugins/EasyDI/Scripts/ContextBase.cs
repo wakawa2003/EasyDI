@@ -148,73 +148,62 @@ namespace EasyDI
                 static object _decore(object obj, List<BindInfor> decoreList, Action<object, MemberInfo, object> setdataPredict)
                 {
                     int i = 0;
-
+                    tempIDecore temp;
                     foreach (BindInfor bind in decoreList)
                     {
-                        //Debug.Log($"decore List[{i}]: {bind.ID}");
                         i++;
                         if (obj != null)
                         {
-
-                            var t = _decoreSingle(obj, bind, setdataPredict);
-
-                            if (t != null)//skip this bind if data = null
+                            if (isIEasyDIDecorator(obj))
                             {
-                                if (isIEasyDIDecorator(obj))
+                                //Debug.Log($"Danh sach");
+                                //foreach (var item in obj.GetType().GetRuntimeMethods())
+                                //{
+                                //    Debug.Log($"method: {item.Name}");
+
+                                //}
+
+                                var memberInObj = _getMemberIsDecoratorInObject(obj, bind.TypeTarget);
+                                if (checkWherePredict(bind.WherePredict, obj, memberInObj))
                                 {
-                                    tempIDecore temp;
-                                    var prevProperties = t.GetType().GetProperty(nameof(temp.PrevDecore));
-                                    Debug.Log($"prev pro: {prevProperties}");
-                                    prevProperties.SetValue(t, obj);
+                                    var newData = _getObjectDataFromBindInfor(obj, bind, memberInObj);
+
+                                    if (newData != null)
+                                    {
+
+                                        var typeObj = obj.GetType();
+                                        var obj_decore = typeObj.GetProperty(nameof(temp.Decore));
+                                        var obj_prevDecore = typeObj.GetProperty(nameof(temp.PrevDecore));
+
+                                        var typeNewData = newData.GetType();
+                                        var newData_Decore = typeNewData.GetProperty(nameof(temp.Decore));
+                                        var newData_prevDecore = typeNewData.GetProperty(nameof(temp.PrevDecore));
+
+                                        //similar AddDecore in IEasyDIDecore<T>
+                                        var oldDecore = obj_decore.GetValue(obj);
+                                        obj_decore.SetValue(obj, newData);
+                                        newData_prevDecore.SetValue(newData, obj);
+                                        newData_Decore.SetValue(newData, oldDecore);
+
+                                        if (oldDecore != null)
+                                        {
+                                            var typeOld = oldDecore.GetType();
+                                            var old_prevDecore = typeOld.GetProperty(nameof(temp.PrevDecore));
+                                            old_prevDecore.SetValue(oldDecore, newData);
+                                        }
+
+                                        obj = newData;
+                                    }
+                                    else
+                                    {
+                                        EasyDILog.LogError("Decorator value is Null!!");
+                                    }
                                 }
-
-                                obj = t;
-
                             }
 
                         }
                     }
                     return obj;
-
-                    //return new obj 
-                    static object _decoreSingle(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
-                    {
-                        //Debug.Log($"decore obj: {obj.GetHashCode()}");
-                        var member = _getMemberIsDecoratorInObject(obj, bindInfor.TypeTarget);
-                        if (member != null)
-                        {
-                            //var fieldType = (member as FieldInfo);
-                            if (checkWherePredict(bindInfor.WherePredict, obj, member))
-                            {
-                                var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                                //Debug.Log($"data obj: {data.GetHashCode()}");
-                                onSetdataPredict?.Invoke(obj, member, data);
-
-                                return data;
-                            }
-                        }
-                        //Debug.Log($"nulllll");
-                        return null;
-
-                    }
-
-                    static object _decoreSingleWithIDecore(object obj, BindInfor bindInfor, Action<object, MemberInfo, object> onSetdataPredict)
-                    {
-                        tempIDecore temp;
-                        var prevProperties = obj.GetType().GetProperty(nameof(temp.PrevDecore));
-                        Debug.Log($"prev pro: {prevProperties}");
-                        var member = prevProperties as MemberInfo;
-                        if (checkWherePredict(bindInfor.WherePredict, obj, member))
-                        {
-                            var data = _getObjectDataFromBindInfor(obj, bindInfor, member);
-                            //Debug.Log($"data obj: {data.GetHashCode()}");
-                            onSetdataPredict?.Invoke(obj, member, data);
-
-                            return data;
-                        }
-                        return null;
-
-                    }
 
                     static bool isIEasyDIDecorator(object obj)
                     {

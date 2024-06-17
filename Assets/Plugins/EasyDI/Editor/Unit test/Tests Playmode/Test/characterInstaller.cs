@@ -54,6 +54,11 @@ namespace EasyDI.UnitTest
         public iSpeed PrevDecore { get; set; }
         [Inject] public iSpeed Decore { get; set; }
         public float Speed { get => Decore == null ? characterInstaller.buffSpeedValue2 : Decore.Speed + characterInstaller.buffSpeedValue2; set { } }
+
+        public void GetAnimationClips(List<AnimationClip> results)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 }

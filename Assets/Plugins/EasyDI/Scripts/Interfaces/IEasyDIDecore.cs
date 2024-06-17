@@ -1,11 +1,52 @@
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEasyDIDecore<T>
 {
     T Decore { get; set; }
     T PrevDecore { get; set; }
+
+    public void AddDecore(T newDecore)
+    {
+        var oldDecore = Decore as IEasyDIDecore<T>;
+        Decore = newDecore;
+        (newDecore as IEasyDIDecore<T>).PrevDecore = (T)this;
+        (newDecore as IEasyDIDecore<T>).Decore = (T)oldDecore;
+        if (oldDecore != null)
+            oldDecore.PrevDecore = newDecore;
+    }
+
+    void RemoveThisDecore()
+    {
+        if (PrevDecore != null)
+        {
+            (PrevDecore as IEasyDIDecore<T>).Decore = Decore;
+            PrevDecore = default;
+        }
+
+        if (Decore != null)
+        {
+            (Decore as IEasyDIDecore<T>).PrevDecore = PrevDecore;
+        }
+
+    }
+
+    T GetRoot()
+    {
+        var c = (T)this;
+        while (c != null)
+        {
+            if ((c as IEasyDIDecore<T>).PrevDecore != null)
+                c = (c as IEasyDIDecore<T>).PrevDecore;
+            if ((c as IEasyDIDecore<T>) == this)
+                break;
+        }
+        return c;
+    }
+
 
     /// <summary>
     /// Check from root to end.
@@ -29,40 +70,10 @@ public interface IEasyDIDecore<T>
 
     }
 
-    void AddDecore(T newDecore)
+    IList<T> ToListDecore()
     {
-        var oldDecore = Decore as IEasyDIDecore<T>;
-        if (oldDecore != null)
-            oldDecore.PrevDecore = newDecore;
-        (newDecore as IEasyDIDecore<T>).PrevDecore = (T)this;
-        (newDecore as IEasyDIDecore<T>).Decore = (T)oldDecore;
-        Decore = newDecore;
-    }
-
-    void RemoveThisDecore()
-    {
-        if (PrevDecore != null)
-        {
-            (PrevDecore as IEasyDIDecore<T>).Decore = Decore;
-            PrevDecore = default;
-        }
-
-        if (Decore != null)
-        {
-            (Decore as IEasyDIDecore<T>).PrevDecore = PrevDecore;
-        }
-
-    }
-
-    T GetRoot()
-    {
-        var c = Decore;
-        while (c != null)
-        {
-            c = (c as IEasyDIDecore<T>).PrevDecore;
-            if ((c as IEasyDIDecore<T>) == this)
-                break;
-        }
-        return c;
+        IList<T> list = new List<T>();
+        ForeachDecore(_ => list.Add(_));
+        return list;
     }
 }

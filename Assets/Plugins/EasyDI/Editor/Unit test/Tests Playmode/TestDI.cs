@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Net.WebSockets;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using UnityEngine;
@@ -54,6 +55,21 @@ namespace EasyDI.UnitTest
             if (sceneInstaller.buffSpeedValue + characterInstaller.buffSpeedValue1 * 2 + characterInstaller.buffSpeedValue2 != characterController.Speed)
                 Debug.LogError("decorator fail!!!");
 
+            //var listDecore = (characterController as IEasyDIDecore<iSpeed>).ToListDecore();
+            //if (listDecore.Count != 5)
+            //    Debug.LogError("count decorator fail!!!");
+
+
+            //Debug.Log($"Decore list:");
+            //int i = 0;
+            //(characterController as IEasyDIDecore<iSpeed>).ForeachDecore(_ =>
+            //{
+            //    Debug.Log($"   {i++}: {_}");
+            //});
+
+
+
+            yield return new WaitForSeconds(1f);
             yield return null;
         }
 
