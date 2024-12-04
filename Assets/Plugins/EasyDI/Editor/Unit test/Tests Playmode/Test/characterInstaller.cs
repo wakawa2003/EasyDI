@@ -44,7 +44,7 @@ namespace EasyDI.UnitTest
 
     public class buffSpeed : iSpeed
     {
-        [Inject] public iSpeed Decore { get; set; }
+        public iSpeed Decore { get; set; }
         public iSpeed PrevDecore { get; set; }
         public float Speed { get => Decore == null ? characterInstaller.buffSpeedValue1 : Decore.Speed + characterInstaller.buffSpeedValue1; set { } }
 
@@ -52,7 +52,7 @@ namespace EasyDI.UnitTest
     public class buffSpeed2 : iSpeed
     {
         public iSpeed PrevDecore { get; set; }
-        [Inject] public iSpeed Decore { get; set; }
+        public iSpeed Decore { get; set; }
         public float Speed { get => Decore == null ? characterInstaller.buffSpeedValue2 : Decore.Speed + characterInstaller.buffSpeedValue2; set { } }
 
         public void GetAnimationClips(List<AnimationClip> results)

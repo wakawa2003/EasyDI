@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EasyDI
 {
@@ -181,18 +182,27 @@ namespace EasyDI
 
                                         //similar AddDecore in IEasyDIDecore<T>
                                         var oldDecore = obj_decore.GetValue(obj);
-                                        obj_decore.SetValue(obj, newData);
-                                        newData_prevDecore.SetValue(newData, obj);
-                                        newData_Decore.SetValue(newData, oldDecore);
-
-                                        if (oldDecore != null)
+                                        if (oldDecore != newData)
                                         {
-                                            var typeOld = oldDecore.GetType();
-                                            var old_prevDecore = typeOld.GetProperty(nameof(temp.PrevDecore));
-                                            old_prevDecore.SetValue(oldDecore, newData);
-                                        }
 
-                                        obj = newData;
+                                            obj_decore.SetValue(obj, newData);
+                                            newData_prevDecore.SetValue(newData, obj);
+                                            newData_Decore.SetValue(newData, oldDecore);
+
+                                            if (oldDecore != null)
+                                            {
+                                                var typeOld = oldDecore.GetType();
+                                                var old_prevDecore = typeOld.GetProperty(nameof(temp.PrevDecore));
+                                                old_prevDecore.SetValue(oldDecore, newData);
+                                            }
+
+                                            obj = newData;
+                                        }
+                                        else
+                                        {
+                                            //EasyDILog.LogError("Circular Decore!!");
+                                            return null;
+                                        }
                                     }
                                     else
                                     {
