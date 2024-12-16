@@ -37,7 +37,7 @@ namespace EasyDI.UnitTest
                 idSingleton = GUID.Generate().ToString();
                 return new classIsSingleton(idSingleton);
             }).AsSingleton();
-            ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().FromInstance(new buffSpeedInScene()).AsTransient();
+            ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
         }
         public class buffSpeedInScene : iSpeed
         {

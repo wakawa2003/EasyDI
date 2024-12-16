@@ -22,16 +22,10 @@ namespace EasyDI.UnitTest
             ContainerBinding.Bind<int>(tags.tagStringMethod2).To<int>().FromInstance(characterInstaller.intInMethod);
             ContainerBinding.Bind<ICharacter>().To<characterController>().FromInstance(GetComponent<characterController>());
 
-            var buff1 = new buffSpeed();
-            var buff2 = new buffSpeed();
-            var buff3 = new buffSpeed2();
 
-            Debug.Log($"buff1: {buff1.GetHashCode()}");
-            Debug.Log($"buff2: {buff2.GetHashCode()}");
-            Debug.Log($"buff3: {buff3.GetHashCode()}");
-            ContainerBinding.Bind<iSpeed>().To<buffSpeed>().FromInstance(buff1).AsTransient();
-            ContainerBinding.Decore<iSpeed>().To<buffSpeed>().FromInstance(buff2).AsTransient();
-            ContainerBinding.Decore<iSpeed>().To<buffSpeed2>().FromInstance(new buffSpeed2()).AsTransient();
+            ContainerBinding.Bind<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeed());
+            ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeed());
+            ContainerBinding.Decore<iSpeed>().To<buffSpeed2>().CustomGetInstance((a, b) => new buffSpeed2());
             //ContainerBinding.Decore<iSpeed>().To<buffSpeed>().FromInstance(new buffSpeed()).AsTransient();
             //ContainerBinding.Decore<iSpeed>().To<buffSpeed2>().FromInstance(buff3).AsTransient();
             //ContainerBinding.Decore<iSpeed>().To<buffSpeed2>().FromInstance(new buffSpeed2()).AsTransient();
@@ -44,7 +38,7 @@ namespace EasyDI.UnitTest
 
     public class buffSpeed : iSpeed
     {
-        public iSpeed Decore { get; set; }
+        [Inject] public iSpeed Decore { get; set; }
         public iSpeed PrevDecore { get; set; }
         public float Speed { get => Decore == null ? characterInstaller.buffSpeedValue1 : Decore.Speed + characterInstaller.buffSpeedValue1; set { } }
 
@@ -52,7 +46,7 @@ namespace EasyDI.UnitTest
     public class buffSpeed2 : iSpeed
     {
         public iSpeed PrevDecore { get; set; }
-        public iSpeed Decore { get; set; }
+        [Inject] public iSpeed Decore { get; set; }
         public float Speed { get => Decore == null ? characterInstaller.buffSpeedValue2 : Decore.Speed + characterInstaller.buffSpeedValue2; set { } }
 
         public void GetAnimationClips(List<AnimationClip> results)

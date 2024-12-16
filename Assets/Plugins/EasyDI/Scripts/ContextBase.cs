@@ -242,8 +242,8 @@ namespace EasyDI
                         //}
                         //Debug.Log($"typeDecore: {typeDecore.Name}");
                         var decore = memberInfoOut.Find(_ => _.GetUnderlyingType().Name == typeDecore.Name);
-                        //if (decore == null)
-                        //    Debug.Log($"cant find");
+                        if (decore == null)
+                            EasyDI.EasyDILog.LogError($"Can't find Decore has [Inject] in {obj.GetType()}");
                         return decore;
                     }
                 }
