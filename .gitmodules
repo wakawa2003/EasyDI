@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/EasyDI"]
+	path = Assets/Plugins/EasyDI
+	url = https://github.com/wakawa2003/EasyDI-Core-upm.git
