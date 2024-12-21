@@ -149,7 +149,7 @@ namespace EasyDI
                 static object _decore(object obj, List<BindInfor> decoreList, Action<object, MemberInfo, object> setdataPredict)
                 {
                     int i = 0;
-                    tempIDecore temp;
+                    tempIDecore temp = default;
                     foreach (BindInfor bind in decoreList)
                     {
                         i++;
@@ -171,20 +171,51 @@ namespace EasyDI
 
                                     if (newData != null)
                                     {
+                                        //var classInstance = Activator.CreateInstance(bind.TypeTarget,);
+
+                                        //Debug.Log($"properties of classInstance");
+                                        //foreach (var item in classInstance.GetType().GetRuntimeProperties())
+                                        //{
+                                        //    Debug.Log($"{item.Name}");
+                                        //}
+                                        //Debug.Log($"end");
+                                        var decore_Name = $"IEasyDIDecore<{bind.TypeTarget.FullName}>." + nameof(temp.Decore);
+                                        var prevDecore_Name = $"IEasyDIDecore<{bind.TypeTarget.FullName}>." + nameof(temp.PrevDecore);
 
                                         var typeObj = obj.GetType();
-                                        var obj_decore = typeObj.GetProperty(nameof(temp.Decore));
-                                        var obj_prevDecore = typeObj.GetProperty(nameof(temp.PrevDecore));
+                                        var obj_decore = typeObj.GetRuntimeProperties().ToList().Find(_ => _.Name == decore_Name);
+                                        if (obj_decore == null)
+                                            obj_decore = typeObj.GetRuntimeProperty(nameof(temp.Decore));
+
+                                        var obj_prevDecore = typeObj.GetRuntimeProperties().ToList().Find(_ => _.Name == prevDecore_Name);
+                                        if (obj_prevDecore == null)
+                                            obj_prevDecore = typeObj.GetRuntimeProperty(nameof(temp.PrevDecore));
 
                                         var typeNewData = newData.GetType();
-                                        var newData_Decore = typeNewData.GetProperty(nameof(temp.Decore));
-                                        var newData_prevDecore = typeNewData.GetProperty(nameof(temp.PrevDecore));
+                                        var newData_Decore = typeNewData.GetRuntimeProperties().ToList().Find(_ => _.Name == decore_Name);
+                                        if (newData_Decore == null)
+                                            newData_Decore = typeNewData.GetRuntimeProperty(nameof(temp.Decore));
 
+                                        var newData_prevDecore = typeNewData.GetRuntimeProperties().ToList().Find(_ => _.Name == decore_Name);
+                                        if (newData_prevDecore == null)
+                                            newData_prevDecore = typeNewData.GetRuntimeProperty(nameof(temp.PrevDecore));
+
+                                        //if (newData_prevDecore == null)
+                                        //{
+                                        //    Debug.Log($"bind type: {bind.TypeTarget.FullName}");
+                                        //    Debug.Log($"RUNTIME NAME: {$"IEasyDIDecore<{bind.TypeTarget.FullName}>." + nameof(temp.PrevDecore)}");
+
+                                        //    Debug.Log($"properties of {typeNewData.Name}");
+                                        //    foreach (var item in typeNewData.GetRuntimeProperties())
+                                        //    {
+                                        //        Debug.Log($"{item.Name}");
+                                        //    }
+                                        //    Debug.Log($"newdaata: {newData_prevDecore.Name}");
+                                        //}
                                         //similar AddDecore in IEasyDIDecore<T>
                                         var oldDecore = obj_decore.GetValue(obj);
                                         if (oldDecore != newData)
                                         {
-
                                             obj_decore.SetValue(obj, newData);
                                             newData_prevDecore.SetValue(newData, obj);
                                             newData_Decore.SetValue(newData, oldDecore);
@@ -270,11 +301,11 @@ namespace EasyDI
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
                                 {
                                     _decore(data, decoreList, (obj, member, data) =>
-                                     {
-                                         var fieldType = (member as FieldInfo);
-                                         fieldType.SetValue(obj, data);
+                                    {
+                                        var fieldType = (member as FieldInfo);
+                                        fieldType.SetValue(obj, data);
 
-                                     });
+                                    });
                                 }
                             }
                             //end decore handle
@@ -309,11 +340,11 @@ namespace EasyDI
                                 if (_tryGetDecoreFromThisAndChild(key, out decoreList))
                                 {
                                     _decore(data, decoreList, (obj, member, data) =>
-                                   {
-                                       var fieldType = (member as PropertyInfo);
-                                       fieldType.SetValue(obj, data);
+                                    {
+                                        var fieldType = (member as PropertyInfo);
+                                        fieldType.SetValue(obj, data);
 
-                                   });
+                                    });
                                 }
                             }
                             //end decore handle
