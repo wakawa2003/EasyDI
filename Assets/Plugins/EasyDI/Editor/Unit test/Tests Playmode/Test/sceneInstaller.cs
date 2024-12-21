@@ -15,6 +15,7 @@ namespace EasyDI.UnitTest
 
         public override void InstallBinding()
         {
+            Debug.Log($"scene installing");
             ContainerBinding.Bind<string>(tags.tag2).To<string>().CustomGetInstance((obj, mem) =>
             {
                 return stringInstallForTag2;
@@ -24,6 +25,7 @@ namespace EasyDI.UnitTest
             {
                 return stringTagForTagSingleton;
             }).AsSingleton();
+
 
             ContainerBinding.Bind<ingameControllerTest>().To<ingameControllerTest>().CustomGetInstance((a, b) =>
             {
@@ -37,11 +39,41 @@ namespace EasyDI.UnitTest
                 idSingleton = GUID.Generate().ToString();
                 return new classIsSingleton(idSingleton);
             }).AsSingleton();
+
             ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
+
+            ContainerBinding.Bind<iHealth>().To<iHealth.Temp>().CustomGetInstance((obj, mem) =>
+            {
+                return new iHealth.Temp();
+            }).AsTransient();
+
+            ContainerBinding.Decore<iHealth>().To<iHealth.Temp>().CustomGetInstance((obj, mem) =>
+            {
+                return new buffHealth(2);
+            }).AsTransient();
+            ContainerBinding.Decore<iHealth>().To<iHealth.Temp>().CustomGetInstance((obj, mem) =>
+            {
+                return new buffHealth(3);
+            }).AsTransient();
         }
+
+        public class buffHealth : iHealth
+        {
+
+            public buffHealth(int health)
+            {
+                _health = health;
+            }
+
+            public int _health { get; set; }
+            public int _maxHealth { get; set; }
+            [Inject] iHealth IEasyDIDecore<iHealth>.Decore { get; set; }
+            iHealth IEasyDIDecore<iHealth>.PrevDecore { get; set; }
+        }
+
         public class buffSpeedInScene : iSpeed
         {
-            public iSpeed Decore { get; set; }
+            [Inject] public iSpeed Decore { get; set; }
             public iSpeed PrevDecore { get; set; }
             public float Speed
             {

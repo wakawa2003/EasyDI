@@ -80,7 +80,6 @@ namespace EasyDI
         /// Not Null when set in binding.
         /// </summary>
         object objectData;
-
         public BindInfor(Type typeTarget)
         {
             this.typeTarget = typeTarget;

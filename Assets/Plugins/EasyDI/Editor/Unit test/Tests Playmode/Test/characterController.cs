@@ -1,16 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace EasyDI.UnitTest
 {
-    public class characterController : MonoBehaviour, ICharacter, iSpeed
+    public class characterController : MonoBehaviour, iCharacter, iSpeed, iHealth
     {
         [Inject] public string StringProperties1 { get; set; }
-        public iSpeed PrevDecore { get; set; }
-        [Inject] public iSpeed Decore { get; set; }
-        public float Speed { get => Decore == null ? 0 : Decore.Speed; set { } }
 
+        public float Speed { get => (this as iSpeed).Decore == null ? 0 : (this as iSpeed).Decore.Speed; set { } }
+
+        [Inject] iSpeed IEasyDIDecore<iSpeed>.Decore { get; set; }
+        iSpeed IEasyDIDecore<iSpeed>.PrevDecore { get; set; }
+
+        [Inject] public iHealth Decore { get; set; }
+        public iHealth PrevDecore { get; set; }
+        public int _health { get; set; }
+        public int _maxHealth { get; set; }
 
         [Inject] public classIsSingleton classIsSingleton;
         [Inject(tags.tag1)] public string stringFieldTag1;
@@ -35,5 +42,4 @@ namespace EasyDI.UnitTest
 
     }
 
-    public interface ICharacter { }
 }

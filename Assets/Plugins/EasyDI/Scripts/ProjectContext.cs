@@ -59,7 +59,11 @@ namespace EasyDI
             DontDestroyOnLoad(this);
 
         }
-
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            EasyDILog.Log($"Project context has destroyed!!!");
+        }
         protected override void Init()
         {
             if (!isInit)

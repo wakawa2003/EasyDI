@@ -20,7 +20,7 @@ namespace EasyDI.UnitTest
             ContainerBinding.Bind<string>(tags.tagStringMethod1).To<string>().FromInstance(stringDefault);
             ContainerBinding.Bind<string>(tags.tagStringMethod2).To<string>().FromInstance(stringDefault);
             ContainerBinding.Bind<int>(tags.tagStringMethod2).To<int>().FromInstance(characterInstaller.intInMethod);
-            ContainerBinding.Bind<ICharacter>().To<characterController>().FromInstance(GetComponent<characterController>());
+            ContainerBinding.Bind<iCharacter>().To<characterController>().FromInstance(GetComponent<characterController>());
 
 
             ContainerBinding.Bind<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeed());

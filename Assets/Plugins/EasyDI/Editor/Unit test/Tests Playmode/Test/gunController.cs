@@ -6,7 +6,7 @@ namespace EasyDI.UnitTest
 {
     public class gunController : MonoBehaviour
     {
-        [Inject] public ICharacter characterOwner;
+        [Inject] public iCharacter characterOwner;
         [Inject] public string stringField;
         [Inject] public classIsSingleton classIsSingleton;
     }
