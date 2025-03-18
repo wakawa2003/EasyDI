@@ -3,6 +3,8 @@ Tuan's DI framework
 
 Note: 
 
+-Decore<> is Override Bind<>!!!!
+
   For Decore:
 
         Use:
