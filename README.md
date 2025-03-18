@@ -5,12 +5,15 @@ Note:
 
 -Decore<> is Override Bind<>!!!!
 
+          ContainerBinding.Bind<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());//can't execute bcs Decore is In Use!!!!
+          ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeedInScene2());
+          
   For Decore:
 
         Use:
 
           ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
-          ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new iSpeed.Temp());
+          ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeedInScene2());
 
         Don't use :
 
