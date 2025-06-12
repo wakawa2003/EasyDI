@@ -27,6 +27,7 @@ Install:
   -use UPM Git: 
   
     -package manager -> add from Git...
+    
       https://github.com/wakawa2003/EasyDI-Core-upm.git
   
   or coppy Plugin/EasyDI folder to your project.
