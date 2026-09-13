@@ -11,14 +11,16 @@ Note:
   For Decore:
 
        In Class Root: 
-       
+
         [Inject] public IPlant Decore { get; set; }
         public IPlant PrevDecore { get; set; }
 
        In Installer Use:
 
           ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
-   or
+
+       or
+       
           ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
           ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeedInScene2());
 
