@@ -10,8 +10,15 @@ Note:
           
   For Decore:
 
-        Use:
+       In Class Root: 
+       
+        [Inject] public IPlant Decore { get; set; }
+        public IPlant PrevDecore { get; set; }
 
+       In Installer Use:
+
+          ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
+   or
           ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().CustomGetInstance((a, b) => new buffSpeedInScene());
           ContainerBinding.Decore<iSpeed>().To<buffSpeed>().CustomGetInstance((a, b) => new buffSpeedInScene2());
 
@@ -20,7 +27,7 @@ Note:
           ContainerBinding.Decore<iSpeed>().To<buffSpeedInScene>().FromInstance(new buffSpeedInScene());
           ContainerBinding.Decore<iSpeed>().To<buffSpeed>().FromInstance(new iSpeed.Temp());
 
-Because FromInstance make only 1 instance for all iSpeed when Inject, CustomGetInstance create corresponding instance foreach Inject!!!!
+=>>>> Because FromInstance make only 1 instance for all iSpeed when Inject, CustomGetInstance create corresponding instance foreach Inject, Decore And PrevDecore can be change duation Inject process!!!!
 
 Install:
 
