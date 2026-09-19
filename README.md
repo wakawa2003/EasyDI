@@ -272,6 +272,65 @@ EasyDI has a dedicated decorator system based on `IEasyDIDecore<T>`.
 
 The included tests use this to add speed, health, damage, attacker, and character behavior.
 
+> ## ⚠️ Important: `Decore<T>()` is an Override/Decorator of `Bind<T>()`
+>
+> `Decore<T>()` is **not an independent binding**. It is used to override/decorate the current binding and build a decorator chain.
+>
+> 🟢 **Use `CustomGetInstance(...)` for decorator bindings:**
+>
+> ```csharp
+> ContainerBinding.Bind<iSpeed>()
+>     .To<buffSpeedInScene>()
+>     .CustomGetInstance((a, b) => new buffSpeedInScene());
+>
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeed>()
+>     .CustomGetInstance((a, b) => new buffSpeedInScene2());
+> ```
+>
+> 🔴 **Do not use `FromInstance(...)` for decorator bindings when a corresponding instance must be created for each injection:**
+>
+> ```csharp
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeedInScene>()
+>     .FromInstance(new buffSpeedInScene());
+>
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeed>()
+>     .FromInstance(new iSpeed.Temp());
+> ```
+>
+> `FromInstance(...)` provides one specific instance to the container. `CustomGetInstance(...)` creates the corresponding instance through the factory during resolution. For `Decore` / `PrevDecore`, this distinction is important because the decorator chain can change during the injection process.
+>
+> ### `Decore` usage
+>
+> In the root class:
+>
+> ```csharp
+> [Inject] public IPlant Decore { get; set; }
+> public IPlant PrevDecore { get; set; }
+> ```
+>
+> In the installer:
+>
+> ```csharp
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeedInScene>()
+>     .CustomGetInstance((a, b) => new buffSpeedInScene());
+> ```
+>
+> Multiple decorators can be chained:
+>
+> ```csharp
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeedInScene>()
+>     .CustomGetInstance((a, b) => new buffSpeedInScene());
+>
+> ContainerBinding.Decore<iSpeed>()
+>     .To<buffSpeed>()
+>     .CustomGetInstance((a, b) => new buffSpeedInScene2());
+> ```
+
 ## 1. The decorated interface
 
 The interface must inherit from `IEasyDIDecore<T>`:
