@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Project Path="EasyDI.csproj" />
+  <Project Path="EasyDI.Demo.csproj" />
+  <Project Path="Tests.csproj" />
+  <Project Path="TestsEditor.csproj" />
+</Solution>
